@@ -1,0 +1,472 @@
+{
+  "schema_version": 1,
+  "project": "olivar-vision",
+  "updated_at": "2026-09-22",
+  "consulted_at": "2026-09-22",
+  "notes": [
+    "Phase 1 inventory only. Declared counts are not verified file counts.",
+    "No images, archives, models, or private field photos are downloaded or versioned by this manifest.",
+    "Statuses are conservative: a public page is not treated as permission unless license and origin evidence are documented."
+  ],
+  "sources": [
+    {
+      "id": "github_sinanuguz_cnn_olive_dataset",
+      "name": "CNN_olive_dataset",
+      "publisher": "sinanuguz",
+      "source_type": "github_repository",
+      "status": "PENDIENTE_DE_LICENCIA",
+      "status_justification": "Original source describes 3400 olive leaf images and RAR archives, but no explicit license file or redistribution terms were visible in the repository listing consulted.",
+      "urls": [
+        {
+          "label": "repository",
+          "url": "https://github.com/sinanuguz/CNN_olive_dataset"
+        }
+      ],
+      "license": {
+        "declared": "NO_LICENSE_FOUND",
+        "spdx": null,
+        "status": "MISSING_OR_UNVERIFIED",
+        "evidence_urls": [
+          "https://github.com/sinanuguz/CNN_olive_dataset"
+        ],
+        "evidence_summary": "Repository page lists README and RAR archives and describes the dataset; no LICENSE file or license badge was visible in the consulted page."
+      },
+      "access": {
+        "access_status": "PUBLIC_METADATA_AND_ARCHIVES_VISIBLE",
+        "requires_account": false,
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "terrestrial_leaf_closeup"
+        ],
+        "task_types": [
+          "classification"
+        ],
+        "declared_total_images": 3400,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "healthy",
+          "olive_peacock_spot",
+          "aculus_olearius"
+        ],
+        "declared_splits": [
+          "train_archives",
+          "test_archive"
+        ],
+        "geography": "Denizli, Turkey",
+        "capture_context": "Spring and summer olive leaf images; exact acquisition protocol not verified."
+      },
+      "quality_and_risk_notes": [
+        "Potential baseline source once license and author permission are resolved.",
+        "Do not redistribute or count as approved training data until rights are explicit.",
+        "Phase 2 must record archive hashes, original split, exact counts, corrupt files, and duplicates."
+      ],
+      "relationships": []
+    },
+    {
+      "id": "kaggle_habibulbasher_olive_leaf_image_dataset",
+      "name": "Olive Leaf Image Dataset",
+      "publisher": "MD Habibul Basher Saikat",
+      "source_type": "kaggle_dataset",
+      "status": "PENDIENTE_DE_LICENCIA",
+      "status_justification": "Kaggle page declares CC0 and 3400 files, but content appears to mirror the original Denizli dataset whose own repository lacks an explicit license; third-party CC0 does not by itself resolve original rights.",
+      "urls": [
+        {
+          "label": "kaggle_dataset",
+          "url": "https://www.kaggle.com/datasets/habibulbasher01644/olive-leaf-image-dataset"
+        }
+      ],
+      "license": {
+        "declared": "CC0-1.0",
+        "spdx": "CC0-1.0",
+        "status": "DECLARED_BY_MIRROR_OR_THIRD_PARTY",
+        "evidence_urls": [
+          "https://www.kaggle.com/datasets/habibulbasher01644/olive-leaf-image-dataset"
+        ],
+        "evidence_summary": "Kaggle listing declares CC0/Public Domain and gives train/test counts; original-source permission remains unresolved."
+      },
+      "access": {
+        "access_status": "PUBLIC_METADATA_VISIBLE_KAGGLE_DOWNLOAD_REQUIRES_KAGGLE_FLOW",
+        "requires_account": "unknown",
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "terrestrial_leaf_closeup"
+        ],
+        "task_types": [
+          "classification"
+        ],
+        "declared_total_images": 3400,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "healthy",
+          "olive_peacock_spot",
+          "aculus_olearius"
+        ],
+        "declared_splits": [
+          "train",
+          "test"
+        ],
+        "geography": "Denizli, Turkey",
+        "capture_context": "Likely same subject matter as the original CNN_olive_dataset; exact file overlap requires hashes in phase 2."
+      },
+      "quality_and_risk_notes": [
+        "Treat as a possible mirror, not independent data.",
+        "Phase 2 must compare exact and perceptual hashes with the GitHub RAR source before using counts.",
+        "CC0 claim is useful metadata but not enough to approve redistribution of the original source."
+      ],
+      "relationships": [
+        {
+          "type": "suspected_mirror_of",
+          "target_id": "github_sinanuguz_cnn_olive_dataset",
+          "evidence": "Same declared origin, total image count, classes, and train/test distribution."
+        }
+      ]
+    },
+    {
+      "id": "github_optim762_olive_leaf_diseases",
+      "name": "olive_leaf_diseases field dataset and code",
+      "publisher": "optim762-prog / Grati et al.",
+      "source_type": "github_repository_and_article",
+      "status": "PENDIENTE_DE_ACCESO",
+      "status_justification": "The 2026 article says the Tunisia/Lebanon field dataset, checkpoints, and scripts are public in the GitHub repository, but the repository URL returned 404 during phase 1 browsing.",
+      "urls": [
+        {
+          "label": "repository_reported_by_article",
+          "url": "https://github.com/optim762-prog/olive_leaf_diseases"
+        },
+        {
+          "label": "article",
+          "url": "https://link.springer.com/article/10.1007/s44163-026-01441-7"
+        }
+      ],
+      "license": {
+        "declared": "UNKNOWN_FOR_DATASET",
+        "spdx": null,
+        "status": "MISSING_OR_UNVERIFIED",
+        "evidence_urls": [
+          "https://link.springer.com/article/10.1007/s44163-026-01441-7",
+          "https://github.com/optim762-prog/olive_leaf_diseases"
+        ],
+        "evidence_summary": "Article is open access under CC BY-NC-ND 4.0, but that article license is not enough to establish dataset or repository licensing; repository was not reachable."
+      },
+      "access": {
+        "access_status": "ARTICLE_VISIBLE_REPOSITORY_UNREACHABLE_404",
+        "requires_account": "unknown",
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "terrestrial_field_leaf"
+        ],
+        "task_types": [
+          "segmentation",
+          "classification",
+          "explainability"
+        ],
+        "declared_total_images": 180,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "healthy",
+          "olive_peacock_spot",
+          "aculus_olearius"
+        ],
+        "declared_splits": [
+          "external_field_sample"
+        ],
+        "geography": "Tunisia and Lebanon",
+        "capture_context": "Article describes a field dataset manually annotated by domain experts; public availability could not be confirmed via repository access."
+      },
+      "quality_and_risk_notes": [
+        "High priority for external validation if access and license are resolved.",
+        "Do not use article metrics as local proof; phase 2 must inspect actual files and labels.",
+        "Repository availability should be retried or authors contacted."
+      ],
+      "relationships": []
+    },
+    {
+      "id": "roboflow_hahmedai_olive_s_leaf_diseases",
+      "name": "olive's leaf diseases",
+      "publisher": "HAhmedAI on Roboflow Universe",
+      "source_type": "roboflow_universe_dataset",
+      "status": "APTO_PARA_AUDITORIA",
+      "status_justification": "Roboflow listing declares a CC BY 4.0 classification dataset with olive leaf classes; this is sufficient for metadata and quality audit, but provenance and clinical confirmation remain unverified.",
+      "urls": [
+        {
+          "label": "roboflow_project",
+          "url": "https://universe.roboflow.com/hahmedai-whou6/olive-s-leaf-diseases"
+        },
+        {
+          "label": "roboflow_dataset_v3",
+          "url": "https://universe.roboflow.com/hahmedai-whou6/olive-s-leaf-diseases/dataset/3"
+        }
+      ],
+      "license": {
+        "declared": "CC-BY-4.0",
+        "spdx": "CC-BY-4.0",
+        "status": "VERIFIED_DECLARED",
+        "evidence_urls": [
+          "https://universe.roboflow.com/hahmedai-whou6/olive-s-leaf-diseases",
+          "https://universe.roboflow.com/hahmedai-whou6/olive-s-leaf-diseases/dataset/3"
+        ],
+        "evidence_summary": "Roboflow project page declares License: CC BY 4.0; version page shows dataset version, split, preprocessing, and augmentation metadata."
+      },
+      "access": {
+        "access_status": "PUBLIC_METADATA_VISIBLE_DOWNLOAD_FLOW_AVAILABLE",
+        "requires_account": "unknown",
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "terrestrial_leaf_closeup"
+        ],
+        "task_types": [
+          "classification"
+        ],
+        "declared_total_images": 2849,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "healthy",
+          "aculus_olearius",
+          "knot_disease",
+          "olive_peacock_spot"
+        ],
+        "declared_splits": [
+          "train",
+          "valid",
+          "test"
+        ],
+        "geography": "unknown",
+        "capture_context": "Roboflow version applies auto-orient, resize to 640x640, and augmentation in exported version; original acquisition provenance is not described."
+      },
+      "quality_and_risk_notes": [
+        "Apt for phase 2 metadata/image audit only; do not treat labels as expert diagnosis without manual review.",
+        "Knot disease may require branch or gall imagery, not only leaves.",
+        "Phase 2 should audit original versus augmented image counts separately."
+      ],
+      "relationships": []
+    },
+    {
+      "id": "kaggle_serhathoca_zeytin",
+      "name": "Olive Leaf Disease",
+      "publisher": "serhathoca",
+      "source_type": "kaggle_dataset",
+      "status": "PENDIENTE_DE_LICENCIA",
+      "status_justification": "Multiple papers cite this Kaggle dataset, including reported sample counts and classes, but phase 1 browsing did not expose a verifiable dataset license.",
+      "urls": [
+        {
+          "label": "kaggle_dataset",
+          "url": "https://www.kaggle.com/datasets/serhathoca/zeytin"
+        },
+        {
+          "label": "secondary_article",
+          "url": "https://www.mdpi.com/2073-4395/16/11/1057"
+        }
+      ],
+      "license": {
+        "declared": "UNKNOWN",
+        "spdx": null,
+        "status": "MISSING_OR_UNVERIFIED",
+        "evidence_urls": [
+          "https://www.kaggle.com/datasets/serhathoca/zeytin",
+          "https://www.mdpi.com/2073-4395/16/11/1057"
+        ],
+        "evidence_summary": "Article states researchers can obtain the dataset from Kaggle subject to provider licensing terms; no license text was verified in phase 1."
+      },
+      "access": {
+        "access_status": "PUBLIC_METADATA_VISIBLE_KAGGLE_DOWNLOAD_REQUIRES_KAGGLE_FLOW",
+        "requires_account": "unknown",
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "terrestrial_leaf_controlled_capture"
+        ],
+        "task_types": [
+          "classification"
+        ],
+        "declared_total_images": 954,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "healthy",
+          "peacock_eye_disease"
+        ],
+        "declared_splits": [],
+        "geography": "Edincik, Bandirma, Balikesir, Turkey",
+        "capture_context": "Secondary papers describe field-collected leaves photographed under controlled light-box conditions."
+      },
+      "quality_and_risk_notes": [
+        "Potentially useful binary peacock-eye dataset if license is resolved.",
+        "Controlled light-box capture may not represent live iPhone field photos.",
+        "Phase 2 must verify direct Kaggle metadata, class folders, and duplicates."
+      ],
+      "relationships": []
+    },
+    {
+      "id": "zenodo_8144164_uav_verticillium",
+      "name": "Deep Learning for Detecting Verticilium Fungus in Olive Trees Using YOLO in UAV Imagery Dataset",
+      "publisher": "Mamalis et al. / Zenodo",
+      "source_type": "zenodo_record",
+      "status": "FUERA_DE_DOMINIO",
+      "status_justification": "Dataset contains UAV RGB images of olive fields for Verticillium fungus detection, not close-range iPhone leaf photos; license field appeared blank in the Zenodo page.",
+      "urls": [
+        {
+          "label": "zenodo_record",
+          "url": "https://zenodo.org/records/8144164"
+        }
+      ],
+      "license": {
+        "declared": "UNKNOWN_OR_BLANK_ON_PAGE",
+        "spdx": null,
+        "status": "MISSING_OR_UNVERIFIED",
+        "evidence_urls": [
+          "https://zenodo.org/records/8144164"
+        ],
+        "evidence_summary": "Zenodo page shows DOI, authors, file size, and md5; license heading was present but no license value was captured in phase 1."
+      },
+      "access": {
+        "access_status": "PUBLIC_METADATA_VISIBLE_LARGE_ARCHIVE_AVAILABLE",
+        "requires_account": false,
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "uav_rgb"
+        ],
+        "task_types": [
+          "object_detection"
+        ],
+        "declared_total_images": null,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "verticillium_fungus_or_tree_condition"
+        ],
+        "declared_splits": [],
+        "geography": "Three olive fields in Greece",
+        "capture_context": "UAV RGB imagery, 4.5 GB ZIP, DOI 10.5281/zenodo.8144164."
+      },
+      "quality_and_risk_notes": [
+        "Keep as research reference only for future aerial work.",
+        "Do not use for the first mobile leaf classifier.",
+        "Do not download the 4.5 GB archive during phase 1."
+      ],
+      "relationships": []
+    },
+    {
+      "id": "kaggle_techplusmentor_olive_leaf_disease_datasets",
+      "name": "Olive_Leaf_Disease_Datasets",
+      "publisher": "Tech Plus Mentor",
+      "source_type": "kaggle_dataset",
+      "status": "PENDIENTE_DE_LICENCIA",
+      "status_justification": "The 2026 Grati et al. article uses this Kaggle dataset and reports counts/classes, but the phase 1 browser view did not expose a verifiable license.",
+      "urls": [
+        {
+          "label": "kaggle_dataset",
+          "url": "https://www.kaggle.com/datasets/techplusmentor/olive-leaf-disease-datasets"
+        },
+        {
+          "label": "article_using_dataset",
+          "url": "https://link.springer.com/article/10.1007/s44163-026-01441-7"
+        }
+      ],
+      "license": {
+        "declared": "UNKNOWN",
+        "spdx": null,
+        "status": "MISSING_OR_UNVERIFIED",
+        "evidence_urls": [
+          "https://www.kaggle.com/datasets/techplusmentor/olive-leaf-disease-datasets",
+          "https://link.springer.com/article/10.1007/s44163-026-01441-7"
+        ],
+        "evidence_summary": "Article data availability names the Kaggle dataset, but no dataset-specific license text was verified from the Kaggle page in phase 1."
+      },
+      "access": {
+        "access_status": "PUBLIC_METADATA_VISIBLE_KAGGLE_DOWNLOAD_REQUIRES_KAGGLE_FLOW",
+        "requires_account": "unknown",
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "terrestrial_leaf_controlled_capture"
+        ],
+        "task_types": [
+          "classification"
+        ],
+        "declared_total_images": 6971,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "healthy",
+          "olive_peacock_spot",
+          "aculus_olearius"
+        ],
+        "declared_splits": [
+          "unknown"
+        ],
+        "geography": "unknown",
+        "capture_context": "Article describes controlled-condition olive leaf images with class counts 1778 Aculus, 1926 healthy, and 3257 Olive Peacock Spot."
+      },
+      "quality_and_risk_notes": [
+        "Potentially useful in-distribution benchmark if license and exact source are verified.",
+        "Possible overlap or augmentation relationship with older olive leaf datasets must be audited in phase 2.",
+        "Do not treat as independent external field validation."
+      ],
+      "relationships": []
+    },
+    {
+      "id": "kaggle_hikmetdurmaz_zeytin_yaprak_224_aug",
+      "name": "Zeytin_Yaprak_224_Aug",
+      "publisher": "hikmetdurmaz",
+      "source_type": "kaggle_dataset",
+      "status": "PENDIENTE_DE_LICENCIA",
+      "status_justification": "Cited in the 2026 Grati et al. article as a Kaggle olive leaf dataset, but phase 1 did not verify direct license, exact contents, or independence.",
+      "urls": [
+        {
+          "label": "kaggle_dataset",
+          "url": "https://www.kaggle.com/datasets/hikmetdurmaz/zeytin-yaprak-224-aug"
+        },
+        {
+          "label": "article_reference",
+          "url": "https://link.springer.com/article/10.1007/s44163-026-01441-7"
+        }
+      ],
+      "license": {
+        "declared": "UNKNOWN",
+        "spdx": null,
+        "status": "MISSING_OR_UNVERIFIED",
+        "evidence_urls": [
+          "https://www.kaggle.com/datasets/hikmetdurmaz/zeytin-yaprak-224-aug",
+          "https://link.springer.com/article/10.1007/s44163-026-01441-7"
+        ],
+        "evidence_summary": "Article reference identifies the dataset, but phase 1 did not verify dataset-specific license or contents."
+      },
+      "access": {
+        "access_status": "PUBLIC_METADATA_VISIBLE_KAGGLE_DOWNLOAD_REQUIRES_KAGGLE_FLOW",
+        "requires_account": "unknown",
+        "downloaded_in_phase_1": false
+      },
+      "declared_content": {
+        "capture_types": [
+          "processed_or_augmented_leaf_image"
+        ],
+        "task_types": [
+          "classification"
+        ],
+        "declared_total_images": null,
+        "declared_total_images_verified": false,
+        "declared_classes": [
+          "unknown"
+        ],
+        "declared_splits": [],
+        "geography": "unknown",
+        "capture_context": "Name suggests resized or augmented 224x224 images; verify before considering any use."
+      },
+      "quality_and_risk_notes": [
+        "Likely processed/augmented rather than original capture; not a priority for baseline generalization.",
+        "Phase 2 should only inspect after license and provenance are explicit.",
+        "Do not use as additional independent evidence without duplicate and augmentation checks."
+      ],
+      "relationships": []
+    }
+  ]
+}

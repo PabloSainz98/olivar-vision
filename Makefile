@@ -21,6 +21,7 @@ setup:
 
 check:
 	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) -m unittest discover -s tests -p 'test_*.py'
+	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/validate_dataset_manifest.py configs/datasets.json
 	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/check_structure.py
 
 status:

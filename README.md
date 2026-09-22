@@ -112,7 +112,7 @@ make check-ios
 Los comandos siguientes son la interfaz objetivo, no afirmaciones sobre codigo existente. Implementar cada comando en la fase correspondiente, mediante `Makefile` o scripts documentados; `make help` listara los disponibles. En macOS, `make check` ejecutara solo comprobaciones locales sin datos privados, red, descargas ni Xcode obligatorio. Separar dependencias opcionales: `make check-ios` requiere Xcode y un simulador compatible; `make check-data` requiere datasets descargados y derechos verificados. Los tests deben comprobar comportamiento real, no solo que una funcion devuelve el valor que ella misma fija. Registrar tambien tamanos y hashes de datasets/modelos en un manifiesto, sin subir fotos ni pesos al Git por defecto.
 
 - `make setup`: crear entorno reproducible y documentar versiones.
-- `make check`: lint/formato cuando se configure, pruebas unitarias e integracion local sin red, y comprobacion de estructura del proyecto.
+- `make check`: lint/formato cuando se configure, pruebas unitarias e integracion local sin red, validacion offline del manifiesto de datasets cuando exista, y comprobacion de estructura del proyecto.
 - `make data-audit`: generar `reports/dataset_audit.json` y resumen legible con recuentos, fuentes, licencias y duplicados; fallar si hay fuga entre particiones.
 - `make train`: entrenar con configuracion versionada y guardar metricas, semilla, manifiesto y modelo fuera de Git.
 - `make evaluate`: evaluar sobre particiones selladas, producir matriz de confusion, metricas por clase y abstencion.
@@ -139,22 +139,23 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 
 ## Estado vivo
 
-- Estado documentado: VALIDADA (22-09-2026). Fase 0 completada tras comprobar que `/Users/pablosainz/Desktop/olivos` partia vacio, sin `AGENTS.md`, sin `README.md` previo y sin repositorio Git; despues se inicializo Git y se creo el esqueleto reproducible.
-- Fase activa: 1 - inventario de datasets.
-- Ultimo hito completado: fase 0 - arranque. Repositorio Git inicializado con README maestro, estructura base, `.gitignore`, comandos locales y pruebas unitarias.
-- Ultimas modificaciones: 22-09-2026, creados `README.md`, `.gitignore`, `Makefile`, `pyproject.toml`, `src/olivar_vision/status.py`, scripts de `setup`/`status`/estructura, tests unitarios, directorios `configs/`, `docs/`, `reports/`, `data/` y `models/`.
-- Comprobaciones realizadas: `make setup` OK (Python 3.14.7, macOS-27.0-arm64, Git 2.54.0, GNU Make 3.81, sin dependencias externas ni red); `make check` OK (2 tests unitarios y comprobacion de estructura/privacidad); `make status` OK; `make data-audit` fallo de forma esperada con codigo 2 y mensaje de fase futura no implementada; `git check-ignore -v` confirmo ignorados para `data/raw/example.jpg`, `models/model.pt`, `photos/leaf.heic`, `datasets/source/file.png` y `field_photos/leaf.jpg`. Los comandos emitieron avisos no bloqueantes de macOS por cache temporal de `xcrun` en `/tmp`.
-- Artefactos disponibles: README maestro, estructura de proyecto, utilidades locales de estado y comprobacion. No se han descargado datasets, no hay fotos privadas, no se han generado pesos ni se ha creado app iOS.
-- Riesgos abiertos: derechos del repositorio original de 3.400 imagenes; posible solapamiento entre espejos; disponibilidad y licencia del conjunto independiente; falta de fotos etiquetadas del olivar.
-- Siguiente accion: iniciar fase 1 - inventario formal de datasets, licencias, acceso, clases y manifiesto de fuentes sin descargar ni redistribuir datos sin permiso verificable.
+- Estado documentado: VALIDADA (22-09-2026). Fase 1 completada tras contrastar fase 0 en Git (`20a5593`), revisar README/codigo/scripts/tests existentes e inventariar fuentes sin descargar datos.
+- Fase activa: 2 - auditoria de imagenes.
+- Ultimo hito completado: fase 1 - inventario formal de datasets y licencias. Entregados `configs/datasets.json`, `reports/datasets.md`, validador offline de manifiesto y tests de esquema.
+- Ultimas modificaciones: 22-09-2026, anadidos `configs/datasets.json`, `reports/datasets.md`, `src/olivar_vision/dataset_manifest.py`, `scripts/validate_dataset_manifest.py` y `tests/test_dataset_manifest.py`; `make check` integra la validacion offline del manifiesto; `scripts/check_structure.py` reconoce los entregables de fase 1.
+- Comprobaciones realizadas: linea base `git status --short` limpio y `git log -5 --oneline` con `20a5593`; `make check` inicial OK con 2 tests antes de editar; tras fase 1, `python3 -m unittest discover -s tests -p 'test_*.py'` OK con 6 tests; `python3 scripts/validate_dataset_manifest.py configs/datasets.json` OK con 8 fuentes y 1 apta para auditoria; `make check` OK con 6 tests, manifiesto y estructura; `make data-audit` fallo de forma esperada con codigo 2 y mensaje de fase futura; `git diff --check` OK. Los comandos siguieron emitiendo avisos no bloqueantes de macOS por cache temporal de `xcrun` en `/tmp`.
+- Artefactos disponibles: README maestro, estructura de proyecto, manifiesto versionado de fuentes, informe `reports/datasets.md`, validador offline y tests. No se han descargado datasets, imagenes, RAR/ZIP, pesos ni fotos privadas.
+- Riesgos abiertos: derechos del repositorio original de 3.400 imagenes; licencia/origen del espejo Kaggle; acceso 404 al repositorio de Grati et al.; licencias no verificadas de Kaggle `serhathoca`, `techplusmentor` e `hikmetdurmaz`; Roboflow apto solo para auditoria y con procedencia clinica por revisar; falta de fotos etiquetadas del olivar.
+- Siguiente accion: iniciar fase 2 - auditoria de imagenes solo para fuentes con permiso/acceso suficiente o fixtures sinteticos. Antes de descargar datos reales, resolver licencias pendientes; mantener `make data-audit` como fase futura hasta implementar hashes, recuentos, integridad y fugas con tests.
 
 ## Registro de fases
 
 | Fase | Estado | Fecha | Evidencia y resultado | Pendiente |
 | --- | --- | --- | --- | --- |
 | 0 | VALIDADA | 22-09-2026 | Directorio real inspeccionado: vacio, sin Git y sin AGENTS.md/README.md previos. `git init` ejecutado. `make setup` OK; primer `make check` detecto una expectativa incorrecta del test de secciones, se corrigio y la repeticion quedo OK con 2 tests y estructura validada; `make status` OK; `make data-audit` fallo explicitamente como fase futura; `git check-ignore -v` valido rutas privadas hipoteticas. | Mantener README actualizado y dejar commit inicial/working tree limpio al cerrar la fase |
-| 1 | PLANIFICADA | - | Fuentes candidatas descritas arriba; licencias pendientes | Inventario formal |
-| 2-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
+| 1 | VALIDADA | 22-09-2026 | `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
+| 2 | SIGUIENTE | 22-09-2026 | Sin implementacion; `make data-audit` sigue fallando explicitamente como fase futura | Implementar auditoria con fixtures sinteticos y permisos resueltos antes de datos reales |
+| 3-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
 
 ## Decisiones y bloqueos
 
@@ -163,12 +164,17 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 - D-003 (22-09-2026): edad, dosis de riego y luz necesaria fuera del alcance de prediccion por foto unica.
 - D-004 (22-09-2026): la fase 0 usa solo Python estandar, `make` y Git; no introduce dependencias externas ni red.
 - D-005 (22-09-2026): los comandos de fases futuras (`data-audit`, `train`, `evaluate`, `export-coreml`, `check-ios`) existen como interfaz objetivo pero fallan explicitamente hasta que se implementen con comprobaciones reales.
+- D-006 (22-09-2026): `configs/datasets.json` es la fuente estructurada para inventario; `reports/datasets.md` es el resumen humano. Ambos deben mantenerse sincronizados.
+- D-007 (22-09-2026): una fuente solo puede marcarse `APTO_PARA_AUDITORIA` si declara licencia verificable y enlaza evidencia. En fase 1 solo Roboflow queda apta, y solo para auditoria, no para diagnostico ni entrenamiento definitivo.
+- D-008 (22-09-2026): los recuentos de imagenes de fase 1 son declarados, no verificados; la fase 2 debe contarlos desde archivos reales si hay permiso de descarga.
 - B-001: acceso/licencias de datos y ausencia de fotos propias por verificar; no impide fase 0.
 - B-002: avisos de macOS por no poder crear cache temporal de `xcrun` en `/tmp` durante `make`; no bloquearon `setup`, `check` ni `status` en esta sesion.
+- B-003: repositorio `https://github.com/optim762-prog/olive_leaf_diseases` indicado por Grati et al. devolvio 404 durante fase 1; no usarlo hasta recuperar acceso o contactar autores.
+- B-004: los datasets Kaggle `serhathoca`, `techplusmentor` e `hikmetdurmaz` quedan pendientes de licencia directa; el espejo Kaggle de 3.400 hojas queda pendiente por derechos de origen.
 
 ## Siguiente accion
 
-Iniciar fase 1: inventario formal de datasets, licencias, acceso, clases y manifiesto de fuentes. No descargar ni redistribuir datos sin permiso verificable; empezar por fichas reproducibles y comprobaciones de licencia/procedencia.
+Iniciar fase 2: implementar `make data-audit` con fixtures sinteticos primero y, solo si hay permisos resueltos, preparar auditoria de imagenes reales. No descargar fuentes pendientes de licencia/acceso. La primera auditoria real permitida por el manifiesto es Roboflow, limitada a revision de calidad/procedencia y con atribucion CC BY 4.0; los demas origenes requieren resolver bloqueos.
 
 ## Plantilla operativa para encargar una fase a Codex
 

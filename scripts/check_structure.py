@@ -13,9 +13,14 @@ REQUIRED_PATHS = [
     "pyproject.toml",
     "src/olivar_vision/__init__.py",
     "src/olivar_vision/status.py",
+    "src/olivar_vision/dataset_manifest.py",
+    "scripts/validate_dataset_manifest.py",
     "tests/test_status.py",
+    "tests/test_dataset_manifest.py",
     "configs/README.md",
+    "configs/datasets.json",
     "docs/README.md",
+    "reports/datasets.md",
     "reports/.gitkeep",
     "data/README.md",
     "models/README.md",
@@ -69,4 +74,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
