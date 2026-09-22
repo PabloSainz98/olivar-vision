@@ -1,0 +1,11 @@
+[project]
+name = "olivar-vision"
+version = "0.0.0"
+description = "Offline-first olive leaf visual monitoring prototype scaffold."
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.olivar_vision]
+phase = "0-arranque"
+network_required_for_check = false
+

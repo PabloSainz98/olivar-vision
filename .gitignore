@@ -1,0 +1,49 @@
+# Python/cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local OS/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Private or heavy data. Keep only documentation/manifests.
+data/raw/
+data/private/
+data/downloads/
+data/field/
+data/**/*.jpg
+data/**/*.jpeg
+data/**/*.png
+data/**/*.heic
+data/**/*.tif
+data/**/*.tiff
+data/**/*.rar
+data/**/*.zip
+datasets/
+photos/
+field_photos/
+
+# Models and generated ML artifacts
+models/*
+!models/.gitkeep
+!models/README.md
+*.mlpackage/
+*.mlmodel
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.ckpt
+*.h5
+
+# Generated reports or runtime scratch
+reports/generated/
+tmp/
+.tmp/
+
