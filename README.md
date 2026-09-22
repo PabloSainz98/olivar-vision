@@ -139,7 +139,7 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 
 ## Estado vivo
 
-- Estado documentado: VALIDADA (22-09-2026). Fase 1 completada tras contrastar fase 0 en Git (`20a5593`), revisar README/codigo/scripts/tests existentes e inventariar fuentes sin descargar datos.
+- Estado documentado: VALIDADA (22-09-2026). Fase 1 completada tras contrastar fase 0 en Git (`20a5593`), revisar README/codigo/scripts/tests existentes e inventariar fuentes sin descargar datos. Implementacion registrada en commit `50e6dc9`.
 - Fase activa: 2 - auditoria de imagenes.
 - Ultimo hito completado: fase 1 - inventario formal de datasets y licencias. Entregados `configs/datasets.json`, `reports/datasets.md`, validador offline de manifiesto y tests de esquema.
 - Ultimas modificaciones: 22-09-2026, anadidos `configs/datasets.json`, `reports/datasets.md`, `src/olivar_vision/dataset_manifest.py`, `scripts/validate_dataset_manifest.py` y `tests/test_dataset_manifest.py`; `make check` integra la validacion offline del manifiesto; `scripts/check_structure.py` reconoce los entregables de fase 1.
@@ -153,7 +153,7 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 | Fase | Estado | Fecha | Evidencia y resultado | Pendiente |
 | --- | --- | --- | --- | --- |
 | 0 | VALIDADA | 22-09-2026 | Directorio real inspeccionado: vacio, sin Git y sin AGENTS.md/README.md previos. `git init` ejecutado. `make setup` OK; primer `make check` detecto una expectativa incorrecta del test de secciones, se corrigio y la repeticion quedo OK con 2 tests y estructura validada; `make status` OK; `make data-audit` fallo explicitamente como fase futura; `git check-ignore -v` valido rutas privadas hipoteticas. | Mantener README actualizado y dejar commit inicial/working tree limpio al cerrar la fase |
-| 1 | VALIDADA | 22-09-2026 | `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
+| 1 | VALIDADA | 22-09-2026 | Commit `50e6dc9`; `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
 | 2 | SIGUIENTE | 22-09-2026 | Sin implementacion; `make data-audit` sigue fallando explicitamente como fase futura | Implementar auditoria con fixtures sinteticos y permisos resueltos antes de datos reales |
 | 3-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
 
