@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "audit_id": "roboflow_hahmedai_v3_phase2",
+  "audit_date": "2026-09-22",
+  "perceptual_hash": {
+    "algorithm": "dhash64-luma-nearest-v1",
+    "max_hamming_distance": 4
+  },
+  "manual_review_sample_size_per_label": 5,
+  "sources": [
+    {
+      "source_id": "roboflow_hahmedai_olive_s_leaf_diseases",
+      "version": "3",
+      "root_env": "OLIVAR_ROBOFLOW_ROOT",
+      "splits": {
+        "test": "test",
+        "train": "train",
+        "valid": "valid"
+      },
+      "allowed_labels": [
+        "aculus_olearius",
+        "healthy",
+        "knot_disease",
+        "olive_peacock_spot"
+      ],
+      "extensions": [
+        ".bmp",
+        ".jpeg",
+        ".jpg",
+        ".pgm",
+        ".png",
+        ".ppm",
+        ".tif",
+        ".tiff",
+        ".webp"
+      ],
+      "manual_review_status": "PENDING",
+      "group_identifiers": {
+        "farm": false,
+        "session": false,
+        "tree": false
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the local phase-0 environment without network or downloads."""
+"""Verify the local project environment without network or downloads."""
 
 import platform
 import shutil
@@ -22,12 +22,12 @@ def tool_version(command):
 def main():
     if sys.version_info < MIN_VERSION:
         print(
-            "ERROR: Python 3.9 or newer is required for the phase-0 checks.",
+            "ERROR: Python 3.9 or newer is required for the project checks.",
             file=sys.stderr,
         )
         return 2
 
-    print("Olivar Vision phase-0 setup")
+    print("Olivar Vision local setup")
     print(f"Python: {platform.python_version()} ({sys.executable})")
     print(f"Platform: {platform.platform()}")
     print(f"git: {tool_version(['git', '--version']) or 'NOT FOUND'}")
@@ -39,4 +39,3 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

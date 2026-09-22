@@ -7,10 +7,10 @@ PYTHONDONTWRITEBYTECODE ?= 1
 help:
 	@printf '%s\n' \
 		'Olivar Vision commands:' \
-		'  make setup         Verify local phase-0 environment without network.' \
+		'  make setup         Verify the local environment without network.' \
 		'  make check         Run local tests and structure checks without private data.' \
 		'  make status        Print live project status from README.md.' \
-		'  make data-audit    Future phase: dataset audit; currently fails explicitly.' \
+		'  make data-audit    Audit an authorized local dataset root; never downloads data.' \
 		'  make train         Future phase: train baseline model; currently fails explicitly.' \
 		'  make evaluate      Future phase: evaluate sealed splits; currently fails explicitly.' \
 		'  make export-coreml Future phase: convert and compare Core ML model; currently fails explicitly.' \
@@ -27,7 +27,10 @@ check:
 status:
 	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/status.py README.md
 
-data-audit train evaluate export-coreml check-ios check-data evaluate-field:
+data-audit:
+	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/data_audit.py
+
+train evaluate export-coreml check-ios check-data evaluate-field:
 	@printf '%s\n' 'ERROR: $@ belongs to a future phase and is not implemented yet.' >&2
 	@printf '%s\n' 'Do not treat this command as validated until its phase adds real checks.' >&2
 	@exit 2

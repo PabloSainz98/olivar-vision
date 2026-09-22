@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the phase-0 repository structure and privacy guardrails."""
+"""Validate repository structure and privacy guardrails."""
 
 from pathlib import Path
 
@@ -14,12 +14,18 @@ REQUIRED_PATHS = [
     "src/olivar_vision/__init__.py",
     "src/olivar_vision/status.py",
     "src/olivar_vision/dataset_manifest.py",
+    "src/olivar_vision/data_audit.py",
+    "src/olivar_vision/image_fingerprint.py",
+    "scripts/data_audit.py",
     "scripts/validate_dataset_manifest.py",
     "tests/test_status.py",
     "tests/test_dataset_manifest.py",
+    "tests/test_data_audit.py",
     "configs/README.md",
     "configs/datasets.json",
+    "configs/data_audit.json",
     "docs/README.md",
+    "docs/data-audit.md",
     "reports/datasets.md",
     "reports/.gitkeep",
     "data/README.md",
@@ -45,6 +51,8 @@ REQUIRED_IGNORES = [
     "*.mlmodel",
     "*.pt",
     "*.pth",
+    "reports/dataset_audit.json",
+    "reports/dataset_audit.md",
 ]
 
 
@@ -66,10 +74,10 @@ def main():
     require(not missing_ignores, ".gitignore missing safeguards: " + ", ".join(missing_ignores))
 
     makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-    for target in ("setup:", "check:", "status:", "data-audit train evaluate export-coreml"):
+    for target in ("setup:\n", "check:\n", "status:\n", "data-audit:\n", "train evaluate export-coreml"):
         require(target in makefile, f"Makefile missing target marker: {target}")
 
-    print("Structure check passed: phase-0 files and privacy guardrails are present.")
+    print("Structure check passed: required files and privacy guardrails are present.")
 
 
 if __name__ == "__main__":

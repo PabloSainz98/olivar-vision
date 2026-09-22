@@ -81,11 +81,12 @@ Este documento es el README maestro del repositorio. Copiarlo a `README.md` en l
 
 ## Instalacion y comandos
 
-Requisitos actuales de fase 0 en macOS:
+Requisitos actuales en macOS:
 
 - `git`
 - `make`
 - `python3` 3.9 o superior
+- `sips` incluido en macOS para decodificar JPEG/TIFF/WebP/HEIC durante una auditoria real
 - Sin red, sin datasets, sin Xcode obligatorio y sin dependencias Python externas para `make check`.
 
 Comandos disponibles:
@@ -95,12 +96,18 @@ make help
 make setup
 make check
 make status
+make data-audit
 ```
 
-Los comandos de fases futuras existen como interfaz objetivo y fallan de forma explicita hasta que se implementen:
+`make data-audit` no descarga datos. Requiere una exportacion local autorizada y falla con codigo 2 sin ella:
 
 ```bash
-make data-audit
+OLIVAR_ROBOFLOW_ROOT=/ruta/local/autorizada make data-audit
+```
+
+La configuracion y los codigos de salida se documentan en `docs/data-audit.md`. Los comandos de fases futuras existen como interfaz objetivo y fallan de forma explicita hasta que se implementen:
+
+```bash
 make train
 make evaluate
 make export-coreml
@@ -139,14 +146,14 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 
 ## Estado vivo
 
-- Estado documentado: VALIDADA (22-09-2026). Fase 1 completada tras contrastar fase 0 en Git (`20a5593`), revisar README/codigo/scripts/tests existentes e inventariar fuentes sin descargar datos. Implementacion registrada en commit `50e6dc9`.
-- Fase activa: 2 - auditoria de imagenes.
-- Ultimo hito completado: fase 1 - inventario formal de datasets y licencias. Entregados `configs/datasets.json`, `reports/datasets.md`, validador offline de manifiesto y tests de esquema.
-- Ultimas modificaciones: 22-09-2026, anadidos `configs/datasets.json`, `reports/datasets.md`, `src/olivar_vision/dataset_manifest.py`, `scripts/validate_dataset_manifest.py` y `tests/test_dataset_manifest.py`; `make check` integra la validacion offline del manifiesto; `scripts/check_structure.py` reconoce los entregables de fase 1.
-- Comprobaciones realizadas: linea base `git status --short` limpio y `git log -5 --oneline` con `20a5593`; `make check` inicial OK con 2 tests antes de editar; tras fase 1, `python3 -m unittest discover -s tests -p 'test_*.py'` OK con 6 tests; `python3 scripts/validate_dataset_manifest.py configs/datasets.json` OK con 8 fuentes y 1 apta para auditoria; `make check` OK con 6 tests, manifiesto y estructura; `make data-audit` fallo de forma esperada con codigo 2 y mensaje de fase futura; `git diff --check` OK. Los comandos siguieron emitiendo avisos no bloqueantes de macOS por cache temporal de `xcrun` en `/tmp`.
-- Artefactos disponibles: README maestro, estructura de proyecto, manifiesto versionado de fuentes, informe `reports/datasets.md`, validador offline y tests. No se han descargado datasets, imagenes, RAR/ZIP, pesos ni fotos privadas.
-- Riesgos abiertos: derechos del repositorio original de 3.400 imagenes; licencia/origen del espejo Kaggle; acceso 404 al repositorio de Grati et al.; licencias no verificadas de Kaggle `serhathoca`, `techplusmentor` e `hikmetdurmaz`; Roboflow apto solo para auditoria y con procedencia clinica por revisar; falta de fotos etiquetadas del olivar.
-- Siguiente accion: iniciar fase 2 - auditoria de imagenes solo para fuentes con permiso/acceso suficiente o fixtures sinteticos. Antes de descargar datos reales, resolver licencias pendientes; mantener `make data-audit` como fase futura hasta implementar hashes, recuentos, integridad y fugas con tests.
+- Estado documentado: EN CURSO - PENDIENTE DE DATOS (22-09-2026). El motor offline de fase 2 esta implementado y validado con entradas sinteticas, pero no se ha auditado ninguna fuente real ni revisado una muestra por clase; la puerta de avance sigue cerrada.
+- Fase activa: 2 - auditoria de imagenes y particiones.
+- Ultimo hito completado: fase 1 - inventario formal de datasets y licencias, commits `50e6dc9` y `09adb83`. La fase 2 solo ha completado su motor, CLI, controles de integridad y pruebas sinteticas.
+- Ultimas modificaciones: 22-09-2026, anadidos `configs/data_audit.json`, `docs/data-audit.md`, `src/olivar_vision/data_audit.py`, `src/olivar_vision/image_fingerprint.py`, `scripts/data_audit.py` y `tests/test_data_audit.py`; `make data-audit` sustituye el marcador de fase futura por una auditoria local de solo lectura.
+- Comprobaciones realizadas: inicio con `git status --short` limpio y `git log -5 --oneline` en `09adb83`, `50e6dc9`, `20a5593`; linea base `make check` OK con 6 tests y `make status` OK; linea base `make data-audit` codigo 2 esperado como fase futura. Tras implementar, `python3 -m unittest tests.test_data_audit -v` OK con 9 tests iniciales; prueba JPEG con `sips` OK; `make check` OK con 18 tests, manifiesto y estructura; compilacion `python3 -m compileall -q src scripts tests` OK usando cache fuera del repo; `make data-audit` sin `OLIVAR_ROBOFLOW_ROOT` codigo 2 esperado y sin informes; `git diff --check` OK. Auditoria agronomica y revision manual: NO EJECUTADAS.
+- Artefactos disponibles: motor offline con SHA-256, decodificacion, dimensiones/orientacion, dHash, deteccion exacta/perceptual entre fuentes y splits, huella de particiones, seleccion determinista de muestras, CLI y documentacion. `reports/dataset_audit.json` y `reports/dataset_audit.md` no existen porque no hay entrada real autorizada. No se descargaron datasets, imagenes, RAR/ZIP, pesos ni fotos privadas.
+- Riesgos abiertos: no hay exportacion local autorizada de Roboflow v3; sus nombres reales de carpetas y procedencia clinica siguen por comprobar; revision manual por clase pendiente; faltan IDs de arbol, sesion y finca; continúan los bloqueos de licencia/acceso de las demas fuentes y la ausencia de fotos etiquetadas del olivar.
+- Siguiente accion: obtener por un medio autorizado una exportacion identificable de Roboflow v3 sin incorporarla a Git, registrar su hash/tamano, ejecutar `OLIVAR_ROBOFLOW_ROOT=/ruta make data-audit` y revisar las muestras propuestas por clase. No iniciar fase 3 hasta resolver incidencias y congelar particiones.
 
 ## Registro de fases
 
@@ -154,7 +161,7 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 | --- | --- | --- | --- | --- |
 | 0 | VALIDADA | 22-09-2026 | Directorio real inspeccionado: vacio, sin Git y sin AGENTS.md/README.md previos. `git init` ejecutado. `make setup` OK; primer `make check` detecto una expectativa incorrecta del test de secciones, se corrigio y la repeticion quedo OK con 2 tests y estructura validada; `make status` OK; `make data-audit` fallo explicitamente como fase futura; `git check-ignore -v` valido rutas privadas hipoteticas. | Mantener README actualizado y dejar commit inicial/working tree limpio al cerrar la fase |
 | 1 | VALIDADA | 22-09-2026 | Commit `50e6dc9`; `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
-| 2 | SIGUIENTE | 22-09-2026 | Sin implementacion; `make data-audit` sigue fallando explicitamente como fase futura | Implementar auditoria con fixtures sinteticos y permisos resueltos antes de datos reales |
+| 2 | EN CURSO - PENDIENTE DE DATOS | 22-09-2026 | Motor/CLI offline implementados; 18 tests OK, incluido JPEG con `sips`, corrupcion, vacios, etiquetas, rutas inseguras y fugas exactas/perceptuales; `make data-audit` sin raiz autorizada devuelve 2 y no escribe informe | Auditar Roboflow v3 real con acceso permitido, revisar muestra por clase, resolver fugas y congelar splits |
 | 3-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
 
 ## Decisiones y bloqueos
@@ -167,14 +174,18 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 - D-006 (22-09-2026): `configs/datasets.json` es la fuente estructurada para inventario; `reports/datasets.md` es el resumen humano. Ambos deben mantenerse sincronizados.
 - D-007 (22-09-2026): una fuente solo puede marcarse `APTO_PARA_AUDITORIA` si declara licencia verificable y enlaza evidencia. En fase 1 solo Roboflow queda apta, y solo para auditoria, no para diagnostico ni entrenamiento definitivo.
 - D-008 (22-09-2026): los recuentos de imagenes de fase 1 son declarados, no verificados; la fase 2 debe contarlos desde archivos reales si hay permiso de descarga.
+- D-009 (22-09-2026): `make data-audit` es de solo lectura y recibe la raiz privada mediante `OLIVAR_ROBOFLOW_ROOT`; nunca descarga datos ni guarda rutas absolutas en informes.
+- D-010 (22-09-2026): los casi duplicados usan `dhash64-luma-nearest-v1` con distancia Hamming maxima 4. Son candidatos para revision manual, no decisiones automaticas de borrado, independencia o calidad clinica.
+- D-011 (22-09-2026): los informes reales de auditoria quedan fuera de Git y no se sobrescriben si cambian salvo opcion explicita tras revision. Una auditoria tecnica sin errores no congela splits mientras la revision por clase siga pendiente.
 - B-001: acceso/licencias de datos y ausencia de fotos propias por verificar; no impide fase 0.
 - B-002: avisos de macOS por no poder crear cache temporal de `xcrun` en `/tmp` durante `make`; no bloquearon `setup`, `check` ni `status` en esta sesion.
 - B-003: repositorio `https://github.com/optim762-prog/olive_leaf_diseases` indicado por Grati et al. devolvio 404 durante fase 1; no usarlo hasta recuperar acceso o contactar autores.
 - B-004: los datasets Kaggle `serhathoca`, `techplusmentor` e `hikmetdurmaz` quedan pendientes de licencia directa; el espejo Kaggle de 3.400 hojas queda pendiente por derechos de origen.
+- B-005: no existe una exportacion local autorizada de Roboflow v3 en este entorno; por ello no hay recuentos reales, informe de dataset ni particiones congeladas y la fase 2 no esta validada.
 
 ## Siguiente accion
 
-Iniciar fase 2: implementar `make data-audit` con fixtures sinteticos primero y, solo si hay permisos resueltos, preparar auditoria de imagenes reales. No descargar fuentes pendientes de licencia/acceso. La primera auditoria real permitida por el manifiesto es Roboflow, limitada a revision de calidad/procedencia y con atribucion CC BY 4.0; los demas origenes requieren resolver bloqueos.
+Obtener por un medio autorizado una exportacion identificable de Roboflow v3 y mantenerla fuera de Git. Registrar archivo/version, tamano y SHA-256; ejecutar `OLIVAR_ROBOFLOW_ROOT=/ruta/local/autorizada make data-audit`; revisar las muestras propuestas de cada clase y resolver cualquier duplicado entre `train`, `valid` y `test`. Si el acceso o la procedencia no quedan claros, mantener la fase `PENDIENTE DE DATOS`. No iniciar fase 3.
 
 ## Plantilla operativa para encargar una fase a Codex
 

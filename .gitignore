@@ -44,6 +44,7 @@ models/*
 
 # Generated reports or runtime scratch
 reports/generated/
+reports/dataset_audit.json
+reports/dataset_audit.md
 tmp/
 .tmp/
-
