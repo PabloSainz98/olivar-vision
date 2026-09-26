@@ -12,6 +12,12 @@ venv/
 .idea/
 .vscode/
 
+# Swift/Xcode generated files
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
 # Private or heavy data. Keep only documentation/manifests.
 data/raw/
 data/private/

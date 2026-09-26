@@ -1,12 +1,19 @@
 # Olivar Vision
 
-Fecha: 22 de septiembre de 2026.
+Fecha: 26 de septiembre de 2026.
 
 ## Problema y objetivo
 
 Quiero monitorizar mi olivar tomando fotos con mi iPhone. Todavia no dispongo de imagenes aereas, inventario de arboles, distancias entre ellos ni fotos etiquetadas del campo. Primero quiero desarrollar y evaluar modelos visuales; las fichas y el mapa llegaran despues. La app debe funcionar sin cobertura para las inferencias basicas y conservar la foto original y el resultado para revisarlos.
 
 Una imagen RGB permite reconocer algunos sintomas visibles, pero no mide directamente edad, humedad del suelo, estado hidrico, disponibilidad de luz ni presencia de todas las enfermedades. La interfaz debe distinguir observacion, sospecha y diagnostico confirmado; nunca recomendar una cantidad de riego ni afirmar "arbol sano" por una foto aparentemente normal.
+
+La prioridad vigente desde el 26-09-2026 es la linea LiDAR: la primera
+funcionalidad usable debe capturar un olivo con un iPhone compatible, conservar
+los originales, obtener geometria con calidad declarada y ofrecer una estimacion
+acotada de biomasa seca aerea, carbono almacenado y CO2 equivalente almacenado.
+El clasificador fotografico queda en pausa en fase 2, sin borrar ni modificar su
+motor, datos o pruebas.
 
 ## Investigacion inicial de datasets
 
@@ -23,7 +30,7 @@ Comprobar versiones y licencias antes de descargar o redistribuir.
 
 Los conjuntos publicos permiten un prototipo de sintomas foliares concretos. No he identificado aqui un conjunto adecuado para inferir con foto de movil la edad exacta, la dosis de agua o la luz necesaria. No inventar etiquetas para esas tareas.
 
-## Alcance de la primera version
+## Alcance fotografico conservado (en pausa)
 
 1. Entrada: una fotografia cercana de hojas de olivo, tomada o importada en iPhone; orientacion y recorte correctos, control de desenfoque y aviso si no hay hoja util.
 2. Salida: `posible_repilo`, `posibles_sintomas_aculus`, `sin_sintomas_visibles_del_catalogo`, `otra_anomalia_o_no_concluyente`. Estas etiquetas son de sintomas visibles, no prueba de agente causal. Si el entrenamiento inicial solo cubre tres clases, implementar rechazo/abstencion y dejar claro que "otra anomalia" no esta clasificada etiologicamente.
@@ -31,7 +38,7 @@ Los conjuntos publicos permiten un prototipo de sintomas foliares concretos. No 
 4. Guardar localmente imagenes y resultados, con consentimiento explicito para cualquier exportacion. Interfaz en espanol y usable sin red. Sin necesidad de mapa, cuentas ni servidor.
 5. Incluir un flujo sencillo para marcar "correcto", "incorrecto" o "pendiente de confirmar", sin convertir una opinion del usuario en diagnostico verificado.
 
-## Plan tecnico para Codex
+## Plan tecnico del clasificador (en pausa)
 
 ### 0. Auditoria de datos
 
@@ -58,6 +65,7 @@ Prototipo nativo en SwiftUI: camara/importacion, inferencia con Vision + Core ML
 - Luz: observaciones de sombra, ubicacion y poda; no inferir requerimiento fisiologico a partir de una imagen aislada.
 - Edad: preferir ano de plantacion o rango documentado; no prometer estimacion exacta por imagen.
 - Otras enfermedades y plagas: ampliar una a una con imagenes representativas y etiquetas verificadas, no clasificador universal improvisado.
+- Escaneo 3D y carbono: estudiar captura LiDAR con iPhone para geometria del olivo y, solo tras validacion local, estimacion parcial de biomasa y cambio de stock de carbono. El volumen envolvente de copa no es volumen de madera ni biomasa; una captura no mide absorcion anual de CO2. La extension independiente L0-L4, sus APIs, literatura, protocolo y puertas estan en `docs/lidar-carbon.md`.
 
 ## Protocolo operativo obligatorio para Codex
 
@@ -88,6 +96,8 @@ Requisitos actuales en macOS:
 - `python3` 3.9 o superior
 - `sips` incluido en macOS para decodificar JPEG/TIFF/WebP/HEIC durante una auditoria real
 - Sin red, sin datasets, sin Xcode obligatorio y sin dependencias Python externas para `make check`.
+- Swift 5.9 o posterior para las pruebas del nucleo L1; Xcode completo y un
+  destino iOS para `make check-ios`.
 
 Comandos disponibles:
 
@@ -97,6 +107,14 @@ make setup
 make check
 make status
 make data-audit
+make lidar-process SESSION=/ruta/privada/sesion
+make lidar-compare LEFT=/ruta/sesion-1 RIGHT=/ruta/sesion-2 OUTPUT=/ruta/comparacion.json
+make lidar-geometry SESSION=/ruta/sesion OUTPUT=/ruta/geometria.json TREE_ISOLATED=1 VERTICAL_COVERAGE=0.9 GROUND_Y_M=0
+make lidar-geometry-compare LEFT=/ruta/geometria-1.json RIGHT=/ruta/geometria-2.json OUTPUT=/ruta/comparacion-geometria.json
+make biomass-estimate INPUT=configs/biomass-carbon.example.json OUTPUT=/ruta/nueva/estimacion.json
+make check-apple-toolchain
+make check-lidar-swift
+make check-ios
 ```
 
 `make data-audit` no descarga datos. Requiere una exportacion local autorizada y falla con codigo 2 sin ella:
@@ -105,13 +123,26 @@ make data-audit
 OLIVAR_ROBOFLOW_ROOT=/ruta/local/autorizada make data-audit
 ```
 
-La configuracion y los codigos de salida se documentan en `docs/data-audit.md`. Los comandos de fases futuras existen como interfaz objetivo y fallan de forma explicita hasta que se implementen:
+La configuracion y los codigos de salida de imagenes se documentan en
+`docs/data-audit.md`. `lidar-process` valida el paquete L1, conserva originales
+y escribe solo bajo `derived/` y `validation/`; `lidar-compare` exige dos IDs de
+sesion distintos del mismo grupo y no sobrescribe el informe. El formato y sus
+limites estan en `docs/lidar-carbon.md`. `lidar-geometry` conserva los limites
+observados, pero solo publica medidas de arbol si se declara aislado, existe
+referencia de suelo y se cumplen coberturas operativas. `biomass-estimate` usa
+una entrada versionada y no sobrescribe resultados; el ejemplo incluido es
+sintetico y no es una medida del olivar. `lidar-geometry-compare` exige informes
+de sesiones distintas del mismo grupo de repeticion, conserva ambos y registra
+diferencias pareadas; esas diferencias no validan por si solas la precision ni
+la repetibilidad de campo.
+
+Los comandos de fases futuras del clasificador fallan de forma explicita hasta
+que se implementen:
 
 ```bash
 make train
 make evaluate
 make export-coreml
-make check-ios
 ```
 
 ## Contrato de ejecucion y autoevaluacion
@@ -124,7 +155,12 @@ Los comandos siguientes son la interfaz objetivo, no afirmaciones sobre codigo e
 - `make train`: entrenar con configuracion versionada y guardar metricas, semilla, manifiesto y modelo fuera de Git.
 - `make evaluate`: evaluar sobre particiones selladas, producir matriz de confusion, metricas por clase y abstencion.
 - `make export-coreml`: convertir el modelo y comparar predicciones con la implementacion original sobre un conjunto fijo.
-- `make check-ios`: compilar y ejecutar pruebas pertinentes en simulador cuando exista app iOS.
+- `make check-lidar-swift`: compilar y probar el contrato/almacenamiento Swift
+  en el host; no verifica ARKit ni un iPhone.
+- `make check-apple-toolchain`: exigir Xcode completo y mostrar la seleccion,
+  SDK, Swift y pasos de correccion; falla si solo hay Command Line Tools.
+- `make check-ios`: compilar el host iOS y su paquete L1 para iOS Simulator con
+  Xcode; el simulador debe informar LiDAR no compatible y no valida captura real.
 - `make status`: imprimir estado de fases leido del README o de un fichero maquina enlazado sin sustituir la actualizacion humana del README; mostrar ultimo resultado comprobado y siguiente accion.
 
 Si alguna herramienta no es viable en el entorno disponible, sustituirla por un comando equivalente documentado y verificable, y registrar el motivo. Ningun comando debe declarar exito si omite silenciosamente su comprobacion principal.
@@ -144,16 +180,31 @@ Si alguna herramienta no es viable en el entorno disponible, sustituirla por un 
 
 Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede prepararse con modelo de demostracion durante las fases 3-4, pero no anunciar capacidad real hasta la evaluacion. La fase 6 depende de obtener fotos del olivar y puede quedar `PENDIENTE DE DATOS` sin bloquear mantenimiento del software. Cada nueva version del modelo debe guardar dataset, codigo, hiperparametros, metricas, fecha y compatibilidad con la app; preservar una version anterior funcional para volver atras.
 
+### Extension independiente LiDAR-carbono
+
+Esta linea no renumera ni desbloquea las fases principales. Dependencias:
+L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
+`docs/lidar-carbon.md`.
+
+| Nivel | Estado | Entregable y puerta resumida |
+| --- | --- | --- |
+| L0. Factibilidad | EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO | Estudio tecnico listo; falta identificar iPhone/iOS y comprobar depth/mesh en hardware real |
+| L1. Captura trazable | EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO | Prototipo y formato v1 implementados; faltan compilacion iOS, sesion real completa y escala con referencias |
+| L2. Geometria validada | PREPARADA EN SINTETICO - PUERTA PENDIENTE | Medidas de altura, copa y diametro con calidad/cobertura sobre nube aislada; falta piloto repetido frente a referencias, sesgo, MAE/RMSE e incertidumbre |
+| L3. Biomasa local | PREPARADA EN SINTETICO - PUERTA PENDIENTE | Ecuacion v1 acotada a Leccino/vaso/secano y diametro manual; faltan calibracion local y validacion independiente |
+| L4. Cambio de carbono | PLANIFICADA | Inventarios repetidos y balance de poda/perdidas; solo entonces valorar un resultado anual limitado |
+
 ## Estado vivo
 
-- Estado documentado: EN CURSO - PENDIENTE DE DATOS (22-09-2026). El motor offline de fase 2 esta implementado y validado con entradas sinteticas, pero no se ha auditado ninguna fuente real ni revisado una muestra por clase; la puerta de avance sigue cerrada.
-- Fase activa: 2 - auditoria de imagenes y particiones.
+- Estado documentado: EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO (26-09-2026). La linea LiDAR-carbono es prioritaria; ninguna puerta L0-L3 se ha validado con datos sinteticos.
+- Fase activa: linea LiDAR-carbono; el clasificador queda en fase 2, EN PAUSA - PENDIENTE DE DATOS, con su motor y pruebas sin cambios.
+- Extension LiDAR-carbono: PRIORITARIA; L0 y L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO (26-09-2026); L2 y L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA. No hay captura en iPhone, escala de campo ni estimacion validada del olivar.
 - Ultimo hito completado: fase 1 - inventario formal de datasets y licencias, commits `50e6dc9` y `09adb83`. La fase 2 solo ha completado su motor, CLI, controles de integridad y pruebas sinteticas.
-- Ultimas modificaciones: 22-09-2026, commit `0851a84`; anadidos `configs/data_audit.json`, `docs/data-audit.md`, `src/olivar_vision/data_audit.py`, `src/olivar_vision/image_fingerprint.py`, `scripts/data_audit.py` y `tests/test_data_audit.py`; `make data-audit` sustituye el marcador de fase futura por una auditoria local de solo lectura.
-- Comprobaciones realizadas: inicio con `git status --short` limpio y `git log -5 --oneline` en `09adb83`, `50e6dc9`, `20a5593`; linea base `make check` OK con 6 tests y `make status` OK; linea base `make data-audit` codigo 2 esperado como fase futura. Tras implementar, `python3 -m unittest tests.test_data_audit -v` OK con 9 tests iniciales; prueba JPEG con `sips` OK; `make check` OK con 18 tests, manifiesto y estructura; compilacion `python3 -m compileall -q src scripts tests` OK usando cache fuera del repo; `make data-audit` sin `OLIVAR_ROBOFLOW_ROOT` codigo 2 esperado y sin informes; `git diff --check` OK. Auditoria agronomica y revision manual: NO EJECUTADAS.
-- Artefactos disponibles: motor offline con SHA-256, decodificacion, dimensiones/orientacion, dHash, deteccion exacta/perceptual entre fuentes y splits, huella de particiones, seleccion determinista de muestras, CLI y documentacion. `reports/dataset_audit.json` y `reports/dataset_audit.md` no existen porque no hay entrada real autorizada. No se descargaron datasets, imagenes, RAR/ZIP, pesos ni fotos privadas.
+- Ultimas modificaciones: 26-09-2026, sin commit; sobre L1 se anadieron geometria con puertas de calidad, estimador versionado Brunori v1, factor de carbono explicito, CLI, diagnostico de Xcode y vistas/pruebas Swift. No se modificaron el manifiesto, auditoria, datasets, entrenamiento ni evaluacion del clasificador.
+- Comprobaciones realizadas: 26-09-2026 en `main`; baseline `make check` OK con 30 tests y `make status` confirmo fase 2/L0-L1 pendientes. Tras los cambios, `make check` OK con 49 tests, manifiesto de 8 fuentes y estructura; 31 pruebas especificas de captura, geometria, biomasa y toolchain tambien OK. `swiftc -frontend -parse` OK para las fuentes, pruebas Swift y host iOS. `plutil -lint` del proyecto/Info.plist y `xmllint` del esquema: OK. `make check-apple-toolchain` BLOQUEADO de forma explicita: solo `/Library/Developer/CommandLineTools`, sin Xcode completo. `swift test` no inicializa XCBuild y `swiftc -typecheck` confirma compilador 6.4.0.34.1 incompatible con SDK 6.4.0.31.4. `make check-ios` queda BLOQUEADO antes de compilar. Captura/precision en iPhone y ensayo de campo: NO EJECUTADOS.
+- Artefactos disponibles: se conserva el motor de auditoria de imagenes sin cambios. L1 aporta deteccion de capacidad ARKit/AVFoundation, escritor offline v1, RGB/profundidad/confianza/intrinsecos/poses con SHA-256, vista AR, referencias metricas seleccionables, nube parcial, validacion de escala, comparacion y un host SwiftUI instalable cuando Xcode este disponible. La preparacion L2 mide formas aisladas con cobertura y rechaza volumen completo; la preparacion L3 calcula solo `AGB_kg=0.0538*DB_cm^2.4208` dentro del dominio publicado y separa biomasa, C y CO2e. No se descargaron ni anadieron datasets, capturas, nubes, imagenes, pesos o datos privados.
 - Riesgos abiertos: no hay exportacion local autorizada de Roboflow v3; sus nombres reales de carpetas y procedencia clinica siguen por comprobar; revision manual por clase pendiente; faltan IDs de arbol, sesion y finca; continúan los bloqueos de licencia/acceso de las demas fuentes y la ausencia de fotos etiquetadas del olivar.
-- Siguiente accion: obtener por un medio autorizado una exportacion identificable de Roboflow v3 sin incorporarla a Git, registrar su hash/tamano, ejecutar `OLIVAR_ROBOFLOW_ROOT=/ruta make data-audit` y revisar las muestras propuestas por clase. No iniciar fase 3 hasta resolver incidencias y congelar particiones.
+- Siguiente accion: instalar y seleccionar Xcode completo, ejecutar `make check-apple-toolchain check-lidar-swift check-ios` e instalar el host SwiftUI incluido en el iPhone; registrar modelo/iOS/capacidades y ejecutar el banco metrico a 1, 2 y 4 m seguido de tres capturas independientes de un olivo pequeno. El clasificador permanece en pausa.
 
 ## Registro de fases
 
@@ -163,6 +214,7 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 | 1 | VALIDADA | 22-09-2026 | Commit `50e6dc9`; `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
 | 2 | EN CURSO - PENDIENTE DE DATOS | 22-09-2026 | Commit `0851a84`; motor/CLI offline implementados; 18 tests OK, incluido JPEG con `sips`, corrupcion, vacios, etiquetas, rutas inseguras y fugas exactas/perceptuales; `make data-audit` sin raiz autorizada devuelve 2 y no escribe informe | Auditar Roboflow v3 real con acceso permitido, revisar muestra por clase, resolver fugas y congelar splits |
 | 3-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
+| L0-L4 LiDAR-carbono | L0-L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO; L2-L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA | 26-09-2026 | Captura L1, geometria acotada y estimador Brunori v1; 49 tests Python totales y sintaxis Swift OK. Sin iPhone, Xcode, sesion real, escala, calibracion local ni validacion independiente | Instalar/seleccionar Xcode, compilar, identificar iPhone/iOS y ejecutar banco metrico mas tres repeticiones de un olivo |
 
 ## Decisiones y bloqueos
 
@@ -177,15 +229,52 @@ Dependencias: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7. La app de la fase 5 puede pr
 - D-009 (22-09-2026): `make data-audit` es de solo lectura y recibe la raiz privada mediante `OLIVAR_ROBOFLOW_ROOT`; nunca descarga datos ni guarda rutas absolutas en informes.
 - D-010 (22-09-2026): los casi duplicados usan `dhash64-luma-nearest-v1` con distancia Hamming maxima 4. Son candidatos para revision manual, no decisiones automaticas de borrado, independencia o calidad clinica.
 - D-011 (22-09-2026): los informes reales de auditoria quedan fuera de Git y no se sobrescriben si cambian salvo opcion explicita tras revision. Una auditoria tecnica sin errores no congela splits mientras la revision por clase siga pendiente.
+- D-012 (26-09-2026): LiDAR-carbono es una extension independiente L0-L4. No cambia la fase 2 principal ni autoriza entrenamiento, pantalla de CO2 anual o claims de carbono.
+- D-013 (26-09-2026): separar volumen envolvente de copa, volumen de madera visible, biomasa seca, carbono almacenado y cambio anual de stock. Una sola captura no produce una tasa anual.
+- D-014 (26-09-2026): ninguna ecuacion alometrica se incorpora solo porque sus variables puedan medirse con iPhone; debe coincidir su dominio y superar calibracion/validacion local con incertidumbre.
+- D-015 (26-09-2026): poda y escaneo exterior requieren contabilidad explicita de residuos y reservorios excluidos. Raices, madera oculta, suelo y cubierta no se imputan desde la nube exterior.
+- D-016 (26-09-2026): el desarrollo L1 que no depende de campo puede avanzar
+  con fixtures y grabaciones, pero no cierra L0 ni L1. El formato v1 mantiene
+  originales, derivados y validacion separados y nunca denomina volumen completo
+  a una superficie parcial.
+- D-017 (26-09-2026): la prioridad operativa pasa a LiDAR-carbono y el
+  clasificador queda en pausa, sin modificar su pipeline ni su evidencia.
+- D-018 (26-09-2026): el modelo experimental v1 usa exclusivamente
+  `AGB_kg=0.0538*DB_cm^2.4208` de Brunori et al. (2017), con DB basal a 0,30 m,
+  `Leccino`, vaso, secano tradicional, 70-250 arboles/ha y DB 5-45 cm. Fuera de
+  ese dominio la salida es `ESTIMATION_NOT_AVAILABLE`.
+- D-019 (26-09-2026): ninguna fraccion de carbono se aplica implicitamente. El
+  usuario debe registrar valor y fuente; 0,47 de Torrus-Castillo et al. (2026)
+  solo puede usarse como proxy explicito, no como validacion de Leccino.
 - B-001: acceso/licencias de datos y ausencia de fotos propias por verificar; no impide fase 0.
 - B-002: avisos de macOS por no poder crear cache temporal de `xcrun` en `/tmp` durante `make`; no bloquearon `setup`, `check` ni `status` en esta sesion.
 - B-003: repositorio `https://github.com/optim762-prog/olive_leaf_diseases` indicado por Grati et al. devolvio 404 durante fase 1; no usarlo hasta recuperar acceso o contactar autores.
 - B-004: los datasets Kaggle `serhathoca`, `techplusmentor` e `hikmetdurmaz` quedan pendientes de licencia directa; el espejo Kaggle de 3.400 hojas queda pendiente por derechos de origen.
 - B-005: no existe una exportacion local autorizada de Roboflow v3 en este entorno; por ello no hay recuentos reales, informe de dataset ni particiones congeladas y la fase 2 no esta validada.
+- B-006: el modelo de iPhone y la version de iOS no estan documentados; compatibilidad LiDAR/ARKit `NO VERIFICADA` hasta ejecutar chequeos en el dispositivo real.
+- B-007: faltan inventario de arboles, variedades, rangos, medidas de referencia, densidad/fraccion de carbono local, datos de biomasa por componentes, escaneos repetidos y destino de poda; no se puede estimar carbono anual de forma defendible.
+- B-008: este host solo tiene `/Library/Developer/CommandLineTools` seleccionado.
+  `xcodebuild` exige Xcode completo, SwiftPM no inicializa XCBuild y el
+  compilador Swift 6.4.0.34.1 no coincide con el SDK 6.4.0.31.4. No hay
+  Xcode/simulador disponible; solo se verificaron sintaxis y estructura.
+- B-009: L1 carece de sesion real completa, referencias metricas verificadas y
+  revision en hardware compatible. Su puerta sigue cerrada aunque pasen los
+  tests sinteticos.
 
 ## Siguiente accion
 
-Obtener por un medio autorizado una exportacion identificable de Roboflow v3 y mantenerla fuera de Git. Registrar archivo/version, tamano y SHA-256; ejecutar `OLIVAR_ROBOFLOW_ROOT=/ruta/local/autorizada make data-audit`; revisar las muestras propuestas de cada clase y resolver cualquier duplicado entre `train`, `valid` y `test`. Si el acceso o la procedencia no quedan claros, mantener la fase `PENDIENTE DE DATOS`. No iniciar fase 3.
+Accion prioritaria LiDAR-carbono: instalar/seleccionar Xcode y un toolchain
+Swift coherente, compilar `OlivarLidarCapture` y el host
+`OlivarVisionLidarApp`, identificar modelo exacto de
+iPhone e iOS y ejecutar los cuatro chequeos de capacidad de L0. Despues medir un
+objeto rigido a 1, 2 y 4 m y hacer tres capturas de un olivo pequeno con
+referencias metricas. Procesar cada sesion sin sobrescribirla y revisar campos,
+escala, cobertura y repetibilidad. En paralelo puede calcularse el ejemplo
+sintetico, pero no se usara como validacion del olivar.
+
+Accion del clasificador, pausada: conservar el trabajo de fase 2. Cuando se
+retome, obtener una exportacion autorizada de Roboflow v3, mantenerla fuera de
+Git y ejecutar la auditoria documentada antes de iniciar fase 3.
 
 ## Plantilla operativa para encargar una fase a Codex
 
@@ -282,3 +371,6 @@ Lee este README completo y comprueba el estado real del proyecto antes de editar
 - Apple: clasificar imagenes con Vision y Core ML.
 - Mohanty et al. (2016), generalizacion de modelos de enfermedad vegetal: prueba de por que evaluar con imagenes nuevas y de campo.
 - Grati et al. (2026), generalizacion entre conjuntos de hojas de olivo.
+- Apple, ARKit y AVFoundation para profundidad, poses, malla y calibracion en hardware LiDAR compatible.
+- Brunori et al. (2017), Ruiz-Peinado et al. (2012), Velazquez-Marti et al. (2014), Fernandez-Sarria et al. (2019) y Torrus-Castillo et al. (2026): metodos de volumen, biomasa y carbono de olivo, con dominios no intercambiables.
+- IPCC (2006), metodo de diferencia de stocks: un cambio anual requiere inventarios en al menos dos fechas comparables.

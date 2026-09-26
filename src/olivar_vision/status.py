@@ -8,6 +8,7 @@ from typing import Dict, Iterable, List
 TRACKED_FIELDS = (
     "Estado documentado",
     "Fase activa",
+    "Extension LiDAR-carbono",
     "Ultimo hito completado",
     "Comprobaciones realizadas",
     "Siguiente accion",
@@ -78,4 +79,3 @@ def parse_status(readme_text: str) -> ProjectStatus:
 
 def load_status(path: Path) -> ProjectStatus:
     return parse_status(path.read_text(encoding="utf-8"))
-

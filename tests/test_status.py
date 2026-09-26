@@ -11,6 +11,7 @@ class StatusParsingTests(unittest.TestCase):
 
 - Estado documentado: VALIDADA.
 - Fase activa: 1 - inventario.
+- Extension LiDAR-carbono: L1 EN CURSO.
 - Ultimo hito completado: fase 0.
 - Comprobaciones realizadas: make check OK.
 - Siguiente accion: texto antiguo.
@@ -23,6 +24,7 @@ Iniciar fase 1 sin descargar datos.
 
         self.assertEqual(status.get("Estado documentado"), "VALIDADA.")
         self.assertEqual(status.get("Fase activa"), "1 - inventario.")
+        self.assertEqual(status.get("Extension LiDAR-carbono"), "L1 EN CURSO.")
         self.assertEqual(status.get("Ultimo hito completado"), "fase 0.")
         self.assertEqual(status.get("Comprobaciones realizadas"), "make check OK.")
         self.assertEqual(
