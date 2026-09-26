@@ -2,10 +2,10 @@
 
 Fecha de revision: 26 de septiembre de 2026.
 
-Estado: `L0 y L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO`; `L2 y L3
-PREPARADAS EN SINTETICO - PUERTAS PENDIENTES`; `L4 PLANIFICADA`. Esta linea es
-la prioridad actual. El clasificador de hojas queda en pausa en fase 2, sin
-eliminar ni modificar su trabajo.
+Estado: cliente web implementado; `L0 y L1 ABIERTAS - CAPTURA LIDAR WEB
+BLOQUEADA Y CAMPO PENDIENTE`; `L2 y L3 PREPARADAS EN SINTETICO - PUERTAS
+PENDIENTES`; `L4 PLANIFICADA`. El clasificador de hojas queda en pausa en fase
+2, sin eliminar ni modificar su trabajo.
 
 ## Objetivo y limite de la primera prueba
 
@@ -15,6 +15,12 @@ estimacion de biomasa y carbono. La primera prueba fisica solo debe demostrar
 captura, trazabilidad y calidad geometrica. El codigo puede comprobar calculos
 con entradas sinteticas o diametro manual, pero eso no valida el olivar ni debe
 mostrar `kg CO2/arbol/ano`.
+
+La decision de producto vigente es usar una pagina web compatible con varios
+dispositivos y no exigir una app iOS. La PWA permite registro RGB/manual y el
+calculo acotado, pero una web en Safari no accede a los frames ARKit. Por tanto,
+la experiencia web usable no se presenta como cumplimiento de L1 y el ensayo 3D
+queda pendiente de una fuente externa o de recuperar un capturador auxiliar.
 
 No se descargaran datasets, no se entrenara ningun modelo y no se modificaran
 la auditoria de imagenes ni el clasificador foliar en esta linea.
@@ -54,9 +60,11 @@ El usuario declara un iPhone 16 Pro (26-09-2026); identificador esperado
 `iPhone17,1`. La version de iOS y los chequeos en tiempo de ejecucion no se
 han registrado, por lo que la compatibilidad real sigue `NO VERIFICADA`.
 
-La puerta documental situa estos chequeos antes de validar L1. En este entorno
-no se dispone del iPhone ni de Xcode completo, por lo que solo se implementaron
-las partes de L1 comprobables con fixtures o grabaciones. Esto no satisface L0:
+La puerta documental situa estos chequeos antes de validar L1. Xcode 27.0 ya
+compilo el prototipo historico en simulador, pero no se ejecuto en el iPhone y
+el cliente principal es ahora web. Una pagina web no puede consultar estas APIs
+ARKit en Safari. Esto no satisface L0: antes de validar L1 se debe registrar,
+mediante una fuente de captura 3D que realmente lo permita:
 antes de validar L1 se debe registrar:
 
 1. Modelo comercial e identificador de hardware del iPhone.
@@ -105,6 +113,33 @@ proporciona por si sola el mapa mundial y las poses acumuladas de ARKit.
 `RoomPlan` y Object Capture no son la base del piloto: estan orientados a otros
 dominios y no resuelven la no rigidez, oclusion y ramas finas de una copa. Solo
 podrian compararse como experimentos secundarios.
+
+## Cliente web principal
+
+`web/` porta la experiencia que no depende de ARKit a una PWA JavaScript sin
+dependencias de runtime:
+
+- contexto de arbol/operador/finca, grupo de repeticiones e historial local;
+- camara RGB con permiso mediante `getUserMedia` y preferencia por camara trasera;
+- fotografias JPEG con SHA-256 conservadas en IndexedDB;
+- referencias metricas externas, geometria manual, cobertura/calidad declarada
+  y comparacion de sesiones del mismo grupo;
+- estimador Brunori v1 con los mismos 31 casos de paridad de Python/Swift;
+- exportacion no sobrescribible a manifiesto JSON o TAR y service worker offline;
+- deteccion de contexto seguro, camara, IndexedDB, WebXR `immersive-ar` y prueba
+  bajo gesto de usuario de la feature `depth-sensing` cuando exista.
+
+El formato web es `olivar-web-field-session`, version 1, con
+`source_type: web_rgb_manual`. Esta separacion es intencionada: `getUserMedia`
+no entrega profundidad, confianza, intrinsecos ni pose; Safari/iPhone no expone
+WebXR inmersivo. Incluso una prueba WebXR de profundidad positiva no constituye
+el paquete L1 porque la disponibilidad de RGB crudo sincronizado, confianza y
+calibracion no queda garantizada. No se simula LiDAR ni se infiere capacidad por
+el nombre del telefono.
+
+La captura Swift/ARKit se conserva como referencia tecnica, no como requisito
+del producto web solicitado. Su contrato sigue siendo util para validar futuros
+paquetes importados de otro capturador 3D.
 
 ## Contrato de captura L1
 
@@ -368,8 +403,8 @@ dispositivo. Los resultados se estratifican por tamano, viento y operador.
 
 | Nivel | Estado actual | Entregable | Puerta de avance |
 | --- | --- | --- | --- |
-| L0. Factibilidad | EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO | Este estudio, matriz de APIs, modelo exacto de iPhone, chequeos de capacidad y protocolo aprobado | Dispositivo identificado; depth/mesh probados en el hardware real; variables objetivo y referencias de campo acordadas |
-| L1. Captura trazable | EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO | Prototipo iOS offline y paquete versionado de RGB, profundidad, confianza, intrinsecos y poses; exportacion privada | Tests sinteticos de proyeccion y transformacion; sesion real completa sin campos silenciosamente ausentes; escala verificada con referencias |
+| L0. Factibilidad | EN CURSO - CAPTURA LIDAR WEB BLOQUEADA | La PWA detecta capacidades web reales; Safari/iPhone no expone ARKit/WebXR AR. El estudio nativo se conserva como referencia | Elegir una fuente 3D real; identificar dispositivo/API y probar depth/mesh sin simulacion; acordar variables y referencias |
+| L1. Captura trazable | EN CURSO - CAMPO PENDIENTE | Formato nativo L1 conservado; la PWA usa un formato RGB/manual separado y exporta originales/hash sin afirmar equivalencia 3D | Tests sinteticos ya disponibles; falta una sesion 3D real completa con RGB, profundidad, confianza, intrinsecos, poses y escala verificada |
 | L2. Geometria validada | PREPARADA EN SINTETICO - PUERTA PENDIENTE | Codigo de altura/copa/diametro con cobertura y calidad; falta informe del piloto con nubes originales/derivadas, repetibilidad, sesgo, MAE/RMSE e incertidumbre | Umbrales de uso de campo pre-registrados y cumplidos para cada variable aceptada; si el volumen de copa falla, reducir alcance a diametro/altura |
 | L3. Biomasa local | PREPARADA EN SINTETICO - PUERTA PENDIENTE | Ecuacion Brunori DB v1 y conversion de stock aisladas; faltan calibracion local por componente, variedad/manejo, validacion por arbol/finca e intervalos | Referencia destructiva o profesional independiente suficiente; error e incertidumbre aceptables; ningun modelo se valida solo porque sus entradas caben en el movil |
 | L4. Cambio de carbono | PLANIFICADA | Dos o mas inventarios comparables, registro de poda/destino, factores de carbono y reporte de cambio de stock por intervalo | Un ciclo temporal valido, balance de ganancias/perdidas, propagacion de incertidumbre y revision experta; solo entonces evaluar un claim anual limitado |
@@ -405,6 +440,12 @@ incertidumbre.
 
 Antes del piloto de 12 arboles, hacer un ensayo de banco y un solo arbol:
 
+Con la ruta web pura este ensayo 3D no es ejecutable en Safari/iPhone. La PWA
+puede registrar las medidas manuales, fotos y contexto, pero los pasos de
+profundidad requieren primero seleccionar un capturador externo compatible con
+el contrato L1. Mantener el protocolo permite comparar esa futura fuente sin
+cambiar los criterios despues de observar resultados.
+
 1. Confirmar el modelo de iPhone y los cuatro chequeos de capacidad de L0.
 2. Escanear una caja o marco rigido con tres dimensiones medidas, a 1, 2 y 4 m.
 3. Escanear un olivo pequeno tres veces, sin viento apreciable, con dos reglas
@@ -423,6 +464,10 @@ capacidades, medidas a 1/2/4 m y tres repeticiones del olivo: `NO VERIFICADOS`.
 
 Archivos principales cambiados:
 
+- `web/`: PWA principal, camara RGB, sesiones IndexedDB, medidas manuales,
+  comparacion, biomasa/carbono, exportacion TAR y uso offline.
+- `web/tests/`: paridad de 31 casos, capacidades sin compatibilidad simulada,
+  sesiones/repeticiones, conservacion de fotos y contenido del TAR.
 - `src/olivar_vision/lidar_capture.py` y `scripts/lidar_session.py`: validacion,
   proyeccion, transformacion, integridad, geometria parcial y comparacion.
 - `src/olivar_vision/lidar_geometry.py` y `scripts/olive_metrics.py`: medidas
@@ -479,10 +524,26 @@ Repeticion del 26-09-2026 tras instalar Xcode 27.0 (27A266a):
 - No se recorrio la pantalla de captura en el simulador; que informe LiDAR no
   compatible fuera de iOS solo lo cubre la prueba XCTest en macOS.
 
-Estos resultados validan logica sintetica y sintaxis, no el sensor, la escala ni
-la precision. L0 y L1 siguen abiertos. El siguiente ensayo concreto es corregir
-el toolchain, compilar para iOS, identificar iPhone/iOS/capacidades, medir un
-objeto rigido a 1, 2 y 4 m y capturar tres veces un olivo pequeno con referencias.
+Migracion web del 26-09-2026:
+
+- `make check-web`: OK, 7 pruebas Node; una recorre los 31 casos compartidos de
+  biomasa y las demas cubren capacidades, WebXR depth, sesiones, comparacion,
+  originales y TAR.
+- `make check`: OK, 7 pruebas web + 50 Python, manifiesto de 8 fuentes y
+  estructura.
+- `node --check web/src/app.mjs` y `node --check web/service-worker.js`: OK.
+- Flujo manual en navegador local: deteccion de capacidades, calculo DB 20 cm,
+  creacion de sesion, referencia, geometria, finalizacion e historial: OK.
+- Recarga tras detener por completo el servidor: OK desde el service worker;
+  persistencia IndexedDB disponible.
+- Camara fisica, instalacion PWA, iPhone/Android y despliegue HTTPS: NO
+  VERIFICADOS. El navegador de escritorio usado no ofrecio WebXR AR.
+
+Estos resultados validan logica sintetica, persistencia y la interfaz web, no el
+sensor, la escala ni la precision. L0 y L1 siguen abiertos. El siguiente ensayo
+web concreto es publicar por HTTPS y comprobar camara, IndexedDB, offline y TAR
+en iPhone/Android. El ensayo LiDAR a 1, 2 y 4 m solo puede retomarse despues de
+elegir una fuente 3D que entregue el contrato L1 real.
 
 ## Datos que faltan antes de validar una estimacion de carbono
 
@@ -509,6 +570,10 @@ cambio temporal, y no se informa absorcion anual.
 
 ## Referencias
 
+- MDN, [`MediaDevices.getUserMedia`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia): camara web con permiso y contexto seguro.
+- MDN, [WebXR Device API](https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API): API experimental y de disponibilidad limitada.
+- Immersive Web Working Group, [WebXR Depth Sensing Module](https://immersive-web.github.io/depth-sensing/): feature `depth-sensing` y datos que puede exponer una implementacion compatible.
+- WebKit, [estado de WebXR AR en iOS](https://bugs.webkit.org/show_bug.cgi?id=309550): WebKit confirma que WebXR no esta soportado en dispositivos iOS.
 - Apple, [Capturing depth using the LiDAR camera](https://developer.apple.com/documentation/AVFoundation/capturing-depth-using-the-lidar-camera).
 - Apple, [ARFrame](https://developer.apple.com/documentation/arkit/arframe) y
   [scene reconstruction](https://developer.apple.com/documentation/ARKit/ARWorldTrackingConfiguration/sceneReconstruction).

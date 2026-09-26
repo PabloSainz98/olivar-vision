@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Olivar Vision">
+  <rect width="512" height="512" rx="72" fill="#1f5b43"/>
+  <path d="M256 390V178" fill="none" stroke="#f4f6f2" stroke-width="28" stroke-linecap="round"/>
+  <path d="M256 245c-82 2-132-39-140-115 81-4 131 37 140 115Zm0 0c82 2 132-39 140-115-81-4-131 37-140 115Z" fill="#b8d493" stroke="#f4f6f2" stroke-width="12" stroke-linejoin="round"/>
+  <path d="M256 316c-64 1-103-30-110-90 64-3 103 29 110 90Zm0 0c64 1 103-30 110-90-64-3-103 29-110 90Z" fill="#7fa971" stroke="#f4f6f2" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M170 402h172" fill="none" stroke="#dca52d" stroke-width="24" stroke-linecap="round"/>
+</svg>

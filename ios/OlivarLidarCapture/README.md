@@ -1,5 +1,10 @@
 # Prototipo LiDAR, geometria, biomasa y carbono
 
+Estado desde 26-09-2026: referencia historica/auxiliar. El cliente principal es
+la PWA de `../../web/`; este paquete se conserva porque documenta el contrato
+ARKit L1 que una web no puede obtener en Safari. No es requisito para usar el
+producto web.
+
 Paquete Swift offline para iOS 15.4 o posterior. Compilar no valida L0/L1. El
 host instalable esta en `../OlivarVisionLidarApp/` y enlaza este paquete local.
 `SystemLidarCapabilityDetector` consulta en tiempo de ejecucion

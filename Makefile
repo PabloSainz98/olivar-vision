@@ -1,14 +1,18 @@
 PYTHON ?= python3
+NODE ?= node
+PORT ?= 8788
 PYTHONPATH := src
 PYTHONDONTWRITEBYTECODE ?= 1
 
-.PHONY: help setup check status data-audit lidar-process lidar-compare lidar-geometry lidar-geometry-compare biomass-estimate check-apple-toolchain check-lidar-swift check-ios train evaluate export-coreml check-data evaluate-field
+.PHONY: help setup check check-web web-serve status data-audit lidar-process lidar-compare lidar-geometry lidar-geometry-compare biomass-estimate check-apple-toolchain check-lidar-swift check-ios train evaluate export-coreml check-data evaluate-field
 
 help:
 	@printf '%s\n' \
 		'Olivar Vision commands:' \
 		'  make setup         Verify the local environment without network.' \
 		'  make check         Run local tests and structure checks without private data.' \
+		'  make check-web     Run the portable web application tests.' \
+		'  make web-serve     Serve the PWA locally at http://127.0.0.1:$(PORT)/.' \
 		'  make status        Print live project status from README.md.' \
 		'  make data-audit    Audit an authorized local dataset root; never downloads data.' \
 		'  make lidar-process Process SESSION as a private L1 capture; never overwrites results.' \
@@ -26,10 +30,18 @@ help:
 setup:
 	@PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/setup.py
 
-check:
+check: check-web
 	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/validate_dataset_manifest.py configs/datasets.json
 	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/check_structure.py
+
+check-web:
+	@$(NODE) --check web/src/app.mjs
+	@$(NODE) --check web/service-worker.js
+	@$(NODE) --test web/tests/*.test.mjs
+
+web-serve:
+	@$(PYTHON) -m http.server $(PORT) --bind 127.0.0.1 --directory web
 
 status:
 	@PYTHONPATH=$(PYTHONPATH) PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/status.py README.md

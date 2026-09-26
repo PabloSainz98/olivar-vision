@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#1f5b43">
+    <meta name="description" content="Captura de campo y estimacion experimental de biomasa y carbono para Olivar Vision.">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Olivar Vision</title>
+  </head>
+  <body>
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="i-camera" viewBox="0 0 24 24">
+        <path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3z"/><circle cx="12" cy="13" r="3"/>
+      </symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24">
+        <path d="M20 11a8 8 0 1 0-2.3 5.7L20 14"/><path d="M20 19v-5h-5"/>
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z"/></symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></symbol>
+      <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></symbol>
+      <symbol id="i-ruler" viewBox="0 0 24 24"><path d="m16 2 6 6L8 22l-6-6Z"/><path d="m14 4 2 2M11 7l2 2M8 10l2 2M5 13l2 2"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></symbol>
+      <symbol id="i-function" viewBox="0 0 24 24"><path d="M18 5H9l6 7-6 7h9"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 21h20Z"/><path d="M12 9v5m0 3h.01"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/></symbol>
+    </svg>
+
+    <header class="app-header">
+      <div>
+        <p class="product-kicker">Campo y carbono</p>
+        <h1>Olivar Vision</h1>
+      </div>
+      <div class="header-actions">
+        <span id="offline-state" class="status-chip" data-state="pending">Comprobando</span>
+        <button id="install-button" class="icon-button" type="button" hidden title="Instalar aplicacion">
+          <svg class="icon"><use href="#i-download"/></svg><span class="sr-only">Instalar</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="tab-bar" aria-label="Secciones">
+      <button class="tab-button is-active" type="button" data-tab="capture" aria-selected="true">
+        <svg class="icon"><use href="#i-camera"/></svg><span>Captura</span>
+      </button>
+      <button class="tab-button" type="button" data-tab="sessions" aria-selected="false">
+        <svg class="icon"><use href="#i-folder"/></svg><span>Sesiones</span>
+      </button>
+      <button class="tab-button" type="button" data-tab="biomass" aria-selected="false">
+        <svg class="icon"><use href="#i-function"/></svg><span>Biomasa</span>
+      </button>
+    </nav>
+
+    <main>
+      <section id="tab-capture" class="tab-panel is-active" aria-labelledby="capture-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">Registro de campo</p><h2 id="capture-heading">Nueva sesión</h2></div>
+          <span id="active-session-badge" class="status-chip" data-state="neutral">Sin iniciar</span>
+        </div>
+
+        <section class="band" aria-labelledby="capabilities-heading">
+          <div class="band-heading">
+            <div><h3 id="capabilities-heading">Capacidades reales</h3><p id="capability-summary" class="secondary">Consultando navegador</p></div>
+            <button id="refresh-capabilities" class="icon-button" type="button" title="Actualizar capacidades">
+              <svg class="icon"><use href="#i-refresh"/></svg><span class="sr-only">Actualizar</span>
+            </button>
+          </div>
+          <div class="capability-grid">
+            <div class="capability-item"><span>Contexto seguro</span><strong id="cap-secure" data-state="pending">...</strong></div>
+            <div class="capability-item"><span>Cámara web</span><strong id="cap-camera" data-state="pending">...</strong></div>
+            <div class="capability-item"><span>Almacenamiento local</span><strong id="cap-storage" data-state="pending">...</strong></div>
+            <div class="capability-item"><span>WebXR AR</span><strong id="cap-xr" data-state="pending">...</strong></div>
+            <div class="capability-item"><span>Profundidad WebXR</span><strong id="cap-depth" data-state="pending">Sin probar</strong></div>
+            <div class="capability-item"><span>ARKit sceneDepth</span><strong data-state="blocked">No accesible</strong></div>
+          </div>
+          <div id="lidar-limit" class="notice notice-warning">
+            <svg class="icon"><use href="#i-alert"/></svg>
+            <p>Esta sesión web no se presenta como captura LiDAR si el navegador no entrega profundidad, confianza, intrínsecos y pose.</p>
+          </div>
+          <button id="probe-xr-depth" class="secondary-button" type="button" disabled>
+            <svg class="icon"><use href="#i-info"/></svg><span>Probar profundidad WebXR</span>
+          </button>
+        </section>
+
+        <section class="band" aria-labelledby="context-heading">
+          <div class="band-heading"><div><h3 id="context-heading">Contexto</h3><p class="secondary">Los tres identificadores son obligatorios</p></div></div>
+          <form id="context-form" class="form-grid" autocomplete="off">
+            <label>ID del árbol<input id="tree-id" required inputmode="text" autocomplete="off"></label>
+            <label>ID del operador<input id="operator-id" required inputmode="text" autocomplete="off"></label>
+            <label>ID de la finca<input id="site-id" required inputmode="text" autocomplete="off"></label>
+            <label>Variedad<input id="context-variety" inputmode="text" autocomplete="off"></label>
+            <label>Tiempo meteorológico<input id="weather" inputmode="text" autocomplete="off"></label>
+            <label>Viento<input id="wind" inputmode="text" autocomplete="off"></label>
+            <label>Estado de poda<input id="pruning-state" inputmode="text" autocomplete="off"></label>
+            <label class="field-wide">Grupo de repeticiones
+              <span class="inline-control"><input id="repeat-group-id" readonly><button id="new-repeat-group" class="icon-button" type="button" title="Nuevo grupo"><svg class="icon"><use href="#i-refresh"/></svg><span class="sr-only">Nuevo grupo</span></button></span>
+            </label>
+          </form>
+        </section>
+
+        <section class="band camera-band" aria-labelledby="camera-heading">
+          <div class="band-heading"><div><h3 id="camera-heading">Cámara RGB</h3><p id="camera-state" class="secondary">Cámara detenida</p></div><span id="photo-count" class="counter">0 fotos</span></div>
+          <div class="camera-frame">
+            <video id="camera-preview" playsinline muted aria-label="Vista de cámara"></video>
+            <div id="camera-placeholder" class="camera-placeholder">
+              <svg class="camera-placeholder-icon"><use href="#i-camera"/></svg><span>Vista de cámara</span>
+            </div>
+            <canvas id="capture-canvas" hidden></canvas>
+          </div>
+          <div class="action-row">
+            <button id="start-camera" class="secondary-button" type="button"><svg class="icon"><use href="#i-camera"/></svg><span>Abrir cámara</span></button>
+            <button id="start-session" class="primary-button" type="button"><svg class="icon"><use href="#i-play"/></svg><span>Iniciar sesión</span></button>
+            <button id="capture-photo" class="primary-button" type="button" disabled><svg class="icon"><use href="#i-camera"/></svg><span>Capturar foto</span></button>
+            <button id="finish-session" class="danger-button" type="button" disabled><svg class="icon"><use href="#i-stop"/></svg><span>Finalizar</span></button>
+          </div>
+          <p id="session-id-output" class="mono secondary"></p>
+        </section>
+
+        <section class="band" aria-labelledby="reference-heading">
+          <div class="band-heading"><div><h3 id="reference-heading">Referencias métricas</h3><p class="secondary">Valores de instrumento externo</p></div><span id="reference-count" class="counter">0 referencias</span></div>
+          <form id="reference-form" class="form-grid compact-grid">
+            <label>Distancia real (m)<input id="reference-expected" inputmode="decimal" placeholder="1,00"></label>
+            <label>Distancia observada (m)<input id="reference-observed" inputmode="decimal" placeholder="Opcional"></label>
+            <label class="field-wide">Nota<input id="reference-note" inputmode="text"></label>
+            <button class="secondary-button field-action" type="submit" disabled><svg class="icon"><use href="#i-ruler"/></svg><span>Guardar referencia</span></button>
+          </form>
+        </section>
+
+        <section class="band" aria-labelledby="geometry-heading">
+          <div class="band-heading"><div><h3 id="geometry-heading">Geometría manual</h3><p class="secondary">Medidas de referencia, no volumen completo</p></div></div>
+          <form id="geometry-form" class="form-grid">
+            <label>Diámetro basal a 0,30 m (cm)<input id="geometry-db" inputmode="decimal"></label>
+            <label>Incertidumbre DB (cm)<input id="geometry-db-uncertainty" inputmode="decimal"></label>
+            <label>Altura del árbol (m)<input id="geometry-height" inputmode="decimal"></label>
+            <label>Copa eje X (m)<input id="geometry-crown-x" inputmode="decimal"></label>
+            <label>Copa eje Z (m)<input id="geometry-crown-z" inputmode="decimal"></label>
+            <label>Cobertura vertical declarada
+              <span class="range-control"><input id="geometry-coverage" type="range" min="0" max="1" step="0.05" value="0.8"><output id="geometry-coverage-output">0,80</output></span>
+            </label>
+            <label class="check-field"><input id="geometry-isolated" type="checkbox"><span>Árbol aislado confirmado</span></label>
+            <label class="field-wide">Observaciones<textarea id="geometry-note" rows="3"></textarea></label>
+            <button class="secondary-button field-action" type="submit" disabled><svg class="icon"><use href="#i-save"/></svg><span>Guardar geometría</span></button>
+          </form>
+        </section>
+      </section>
+
+      <section id="tab-sessions" class="tab-panel" aria-labelledby="sessions-heading" hidden>
+        <div class="section-heading">
+          <div><p class="eyebrow">Historial local</p><h2 id="sessions-heading">Sesiones</h2></div>
+          <button id="refresh-sessions" class="icon-button" type="button" title="Actualizar sesiones"><svg class="icon"><use href="#i-refresh"/></svg><span class="sr-only">Actualizar</span></button>
+        </div>
+        <section class="band">
+          <div id="session-list" class="session-list"><p class="empty-state">No hay sesiones guardadas.</p></div>
+        </section>
+        <section class="band" aria-labelledby="compare-heading">
+          <div class="band-heading"><div><h3 id="compare-heading">Comparar repeticiones</h3><p class="secondary">Observación pareada, no validación</p></div></div>
+          <div class="form-grid compact-grid">
+            <label>Sesión A<select id="compare-left"></select></label>
+            <label>Sesión B<select id="compare-right"></select></label>
+            <button id="compare-sessions" class="secondary-button field-action" type="button"><svg class="icon"><use href="#i-function"/></svg><span>Comparar</span></button>
+          </div>
+          <div id="comparison-result" class="result-region" hidden></div>
+        </section>
+      </section>
+
+      <section id="tab-biomass" class="tab-panel" aria-labelledby="biomass-heading" hidden>
+        <div class="section-heading"><div><p class="eyebrow">Modelo experimental</p><h2 id="biomass-heading">Biomasa y carbono</h2></div><span class="status-chip" data-state="warning">L3 pendiente</span></div>
+        <section class="band">
+          <form id="biomass-form" class="form-grid">
+            <label>Diámetro basal (cm)<input id="biomass-db" inputmode="decimal" required></label>
+            <label>Altura de medida (m)<input id="biomass-height" inputmode="decimal" value="0,30" required></label>
+            <label>Incertidumbre DB (cm)<input id="biomass-uncertainty" inputmode="decimal"></label>
+            <label>Origen del diámetro<select id="biomass-source"><option value="manual_tape">Cinta manual</option><option value="lidar">LiDAR importado</option></select></label>
+            <label id="lidar-validation-field" hidden style="display: none">Validación LiDAR<select id="biomass-lidar-validation"><option value="SYNTHETIC_ONLY">No validado</option><option value="VALIDATED_REAL_DEVICE">Validado en dispositivo real</option></select></label>
+            <label>Variedad<input id="biomass-cultivar" value="Leccino" required></label>
+            <label>Densidad (árboles/ha)<input id="biomass-density" inputmode="decimal" required></label>
+            <label>Fracción de carbono<input id="biomass-carbon-fraction" inputmode="decimal" placeholder="0,47" required></label>
+            <label class="field-wide">Fuente de la fracción<input id="biomass-carbon-source" required></label>
+            <label class="check-field"><input id="biomass-vase" type="checkbox"><span>Formación en vaso</span></label>
+            <label class="check-field"><input id="biomass-rainfed" type="checkbox"><span>Secano tradicional</span></label>
+            <label class="check-field"><input id="biomass-proxy" type="checkbox"><span>Factor usado como proxy</span></label>
+            <div class="action-row field-wide">
+              <button class="primary-button" type="submit"><svg class="icon"><use href="#i-function"/></svg><span>Calcular</span></button>
+              <button id="use-active-geometry" class="secondary-button" type="button"><svg class="icon"><use href="#i-ruler"/></svg><span>Usar geometría activa</span></button>
+            </div>
+          </form>
+        </section>
+        <section id="biomass-result" class="result-region" aria-live="polite" hidden></section>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <script type="module" src="./src/app.mjs"></script>
+  </body>
+</html>

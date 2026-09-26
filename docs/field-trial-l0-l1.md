@@ -2,9 +2,17 @@
 
 Fecha de preparacion: 26 de septiembre de 2026.
 
-Estado: `NO EJECUTADO`. Ninguna celda de resultados de este documento se ha
-rellenado con datos reales ni sinteticos. Este protocolo prepara la primera
-evidencia fisica; no valida L0, L1, L2 ni L3 por existir.
+Estado: `NO EJECUTADO - CAPTURA LIDAR BLOQUEADA PARA EL CAMINO WEB`. Ninguna
+celda de resultados se ha rellenado con datos reales ni sinteticos. Este
+protocolo conserva los criterios de la primera evidencia fisica; no valida L0,
+L1, L2 ni L3 por existir.
+
+La decision vigente es usar la PWA de `web/` y no exigir una app iOS. Safari en
+iPhone no expone la captura ARKit requerida por este ensayo. La PWA puede
+registrar fotos, contexto, referencias externas y medidas manuales, pero no
+ejecuta los pasos de profundidad. Las instrucciones nativas de este documento
+quedan como referencia suspendida hasta elegir un capturador 3D externo o
+recuperar expresamente el prototipo Swift como herramienta auxiliar.
 
 ## Dispositivo
 
@@ -78,6 +86,13 @@ Capturas:
 4. Anotar el nombre de las tres carpetas de sesion.
 
 ## Exportacion
+
+En el flujo web, finalizar la sesion y descargar su TAR desde `Sesiones`. El
+archivo usa `olivar-web-field-session` y debe guardarse fuera de Git. No se pasa
+a `make lidar-process`, porque no contiene profundidad, confianza, intrinsecos
+ni pose y no es un paquete L1.
+
+La exportacion nativa siguiente solo aplica si se reactiva ese capturador:
 
 1. Conectar el iPhone al Mac o usar Archivos > En mi iPhone > Olivar Vision
    LiDAR > lidar. Copiar **cada carpeta de sesion por separado**, sin renombrar

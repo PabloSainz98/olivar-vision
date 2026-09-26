@@ -1,0 +1,53 @@
+name: Publish web to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - web/**
+      - tests/fixtures/biomass_carbon_parity_cases.json
+      - Makefile
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Test web client
+        run: make check-web
+      - name: Prepare public files only
+        run: |
+          mkdir -p _site
+          cp web/index.html web/styles.css web/manifest.webmanifest web/service-worker.js _site/
+          cp -R web/assets web/src _site/
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4

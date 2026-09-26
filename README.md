@@ -8,11 +8,14 @@ Quiero monitorizar mi olivar tomando fotos con mi iPhone. Todavia no dispongo de
 
 Una imagen RGB permite reconocer algunos sintomas visibles, pero no mide directamente edad, humedad del suelo, estado hidrico, disponibilidad de luz ni presencia de todas las enfermedades. La interfaz debe distinguir observacion, sospecha y diagnostico confirmado; nunca recomendar una cantidad de riego ni afirmar "arbol sano" por una foto aparentemente normal.
 
-La prioridad vigente desde el 26-09-2026 es la linea LiDAR: la primera
-funcionalidad usable debe capturar un olivo con un iPhone compatible, conservar
-los originales, obtener geometria con calidad declarada y ofrecer una estimacion
-acotada de biomasa seca aerea, carbono almacenado y CO2 equivalente almacenado.
-El clasificador fotografico queda en pausa en fase 2, sin borrar ni modificar su
+La prioridad vigente desde el 26-09-2026 es un cliente web movil compatible con
+iPhone, Android y escritorio, sin instalacion nativa. La PWA conserva fotografias
+RGB, contexto, repeticiones y medidas manuales; ofrece una estimacion acotada de
+biomasa seca aerea, carbono almacenado y CO2 equivalente almacenado. La API web
+de camara no expone `ARKit sceneDepth`, confianza, intrinsecos ni pose, y Safari
+en iPhone no ofrece WebXR inmersivo. Por ello la web nunca presenta una foto RGB
+como escaneo LiDAR: la captura L1 3D queda bloqueada para el camino web puro. El
+clasificador fotografico sigue en pausa en fase 2, sin borrar ni modificar su
 motor, datos o pruebas.
 
 ## Investigacion inicial de datasets
@@ -95,9 +98,10 @@ Requisitos actuales en macOS:
 - `make`
 - `python3` 3.9 o superior
 - `sips` incluido en macOS para decodificar JPEG/TIFF/WebP/HEIC durante una auditoria real
+- Node.js 20 o posterior para las pruebas de la PWA; no hay dependencias npm.
 - Sin red, sin datasets, sin Xcode obligatorio y sin dependencias Python externas para `make check`.
-- Swift 5.9 o posterior para las pruebas del nucleo L1; Xcode completo y un
-  destino iOS para `make check-ios`.
+- Swift 5.9/Xcode solo para conservar y comprobar el prototipo nativo historico;
+  no son necesarios para ejecutar la web.
 
 Comandos disponibles:
 
@@ -105,6 +109,8 @@ Comandos disponibles:
 make help
 make setup
 make check
+make check-web
+make web-serve
 make status
 make data-audit
 make lidar-process SESSION=/ruta/privada/sesion
@@ -116,6 +122,10 @@ make check-apple-toolchain
 make check-lidar-swift
 make check-ios
 ```
+
+`make web-serve` abre el cliente en `http://127.0.0.1:8788/`. En un movil debe
+publicarse la carpeta `web/` bajo HTTPS para que el navegador permita la camara.
+La guia de uso, persistencia y limites esta en `web/README.md`.
 
 `make data-audit` no descarga datos. Requiere una exportacion local autorizada y falla con codigo 2 sin ella:
 
@@ -151,6 +161,10 @@ Los comandos siguientes son la interfaz objetivo, no afirmaciones sobre codigo e
 
 - `make setup`: crear entorno reproducible y documentar versiones.
 - `make check`: lint/formato cuando se configure, pruebas unitarias e integracion local sin red, validacion offline del manifiesto de datasets cuando exista, y comprobacion de estructura del proyecto.
+- `make check-web`: comprobar sintaxis del cliente y service worker, paridad de
+  biomasa, sesiones, capacidades y exportacion TAR sin red.
+- `make web-serve`: servir la PWA en localhost para desarrollo; la camara movil
+  fuera de localhost requiere HTTPS.
 - `make data-audit`: generar `reports/dataset_audit.json` y resumen legible con recuentos, fuentes, licencias y duplicados; fallar si hay fuga entre particiones.
 - `make train`: entrenar con configuracion versionada y guardar metricas, semilla, manifiesto y modelo fuera de Git.
 - `make evaluate`: evaluar sobre particiones selladas, producir matriz de confusion, metricas por clase y abstencion.
@@ -188,23 +202,23 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 
 | Nivel | Estado | Entregable y puerta resumida |
 | --- | --- | --- |
-| L0. Factibilidad | EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO | Estudio tecnico listo; falta identificar iPhone/iOS y comprobar depth/mesh en hardware real |
-| L1. Captura trazable | EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO | Prototipo y formato v1 implementados; faltan compilacion iOS, sesion real completa y escala con referencias |
+| L0. Factibilidad | EN CURSO - CAMINO WEB LIDAR BLOQUEADO | La PWA detecta APIs reales; Safari/iPhone no expone WebXR AR ni ARKit depth. Falta decidir una fuente 3D externa si se mantiene L1 |
+| L1. Captura trazable | EN CURSO - CAMPO PENDIENTE | El prototipo nativo/formato v1 quedan como referencia; la web implementa RGB/manual en un formato separado y no afirma equivalencia LiDAR |
 | L2. Geometria validada | PREPARADA EN SINTETICO - PUERTA PENDIENTE | Medidas de altura, copa y diametro con calidad/cobertura sobre nube aislada; falta piloto repetido frente a referencias, sesgo, MAE/RMSE e incertidumbre |
 | L3. Biomasa local | PREPARADA EN SINTETICO - PUERTA PENDIENTE | Ecuacion v1 acotada a Leccino/vaso/secano y diametro manual; faltan calibracion local y validacion independiente |
 | L4. Cambio de carbono | PLANIFICADA | Inventarios repetidos y balance de poda/perdidas; solo entonces valorar un resultado anual limitado |
 
 ## Estado vivo
 
-- Estado documentado: EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO (26-09-2026). La linea LiDAR-carbono es prioritaria; ninguna puerta L0-L3 se ha validado con datos sinteticos.
-- Fase activa: linea LiDAR-carbono; el clasificador queda en fase 2, EN PAUSA - PENDIENTE DE DATOS, con su motor y pruebas sin cambios.
-- Extension LiDAR-carbono: PRIORITARIA; L0 y L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO (26-09-2026); L2 y L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA. El host iOS compila y se abre en iOS Simulator; no hay captura en iPhone, escala de campo ni estimacion validada del olivar.
+- Estado documentado: CLIENTE WEB IMPLEMENTADO - VALIDACION MOVIL Y CAMPO PENDIENTES (26-09-2026). Ninguna puerta L0-L3 se valida con la PWA ni con datos sinteticos.
+- Fase activa: migracion web de la linea LiDAR-carbono; el clasificador queda en fase 2, EN PAUSA - PENDIENTE DE DATOS, con su motor y pruebas sin cambios.
+- Extension LiDAR-carbono: la PWA es el cliente principal para RGB, contexto, medidas manuales, repeticiones y calculo experimental. L0-L1 siguen abiertos porque Safari/iPhone no expone la captura LiDAR necesaria; L2-L3 permanecen PREPARADAS EN SINTETICO - PUERTAS PENDIENTES y L4 PLANIFICADA. El host iOS historico compila en simulador, pero ya no es el camino de producto solicitado.
 - Ultimo hito completado: fase 1 - inventario formal de datasets y licencias, commits `50e6dc9` y `09adb83`. La fase 2 solo ha completado su motor, CLI, controles de integridad y pruebas sinteticas.
-- Ultimas modificaciones: 26-09-2026, rama `claude/olivar-vision-agents-bc27b8`: el trabajo LiDAR previo se confirmo en commits `5a5d05d`, `f703bd7`, `9ec63ea` y `1a4bfa7`; despues se anadio una fixture de paridad Python/Swift con valores calculados con `bc -l`, se corrigio el rechazo de DB medido a 0,32 m por redondeo binario, se contrasto Brunori et al. (2017) con el PDF primario, se completo el `Info.plist` del host (faltaba `CFBundleIdentifier`, lo que impedia instalar la app) y se preparo `docs/field-trial-l0-l1.md` para el iPhone 16 Pro. Antes, sobre L1 se anadieron geometria con puertas de calidad, estimador versionado Brunori v1, factor de carbono explicito, CLI, diagnostico de Xcode y vistas/pruebas Swift. No se modificaron el manifiesto, auditoria, datasets, entrenamiento ni evaluacion del clasificador.
-- Comprobaciones realizadas: 26-09-2026 en `main`; baseline `make check` OK con 30 tests y `make status` confirmo fase 2/L0-L1 pendientes. Tras los cambios, `make check` OK con 49 tests, manifiesto de 8 fuentes y estructura; 31 pruebas especificas de captura, geometria, biomasa y toolchain tambien OK. `swiftc -frontend -parse` OK para las fuentes, pruebas Swift y host iOS. `plutil -lint` del proyecto/Info.plist y `xmllint` del esquema: OK. `make check-apple-toolchain` BLOQUEADO de forma explicita: solo `/Library/Developer/CommandLineTools`, sin Xcode completo. `swift test` no inicializa XCBuild y `swiftc -typecheck` confirma compilador 6.4.0.34.1 incompatible con SDK 6.4.0.31.4. `make check-ios` queda BLOQUEADO antes de compilar. Captura/precision en iPhone y ensayo de campo: NO EJECUTADOS. Repeticion del 26-09-2026 con Xcode 27.0 (27A266a) seleccionado: `make check` OK con 50 tests; `make check-apple-toolchain` READY; `make check-lidar-swift` OK con 6 pruebas XCTest en macOS, incluida la paridad; `make check-ios` BUILD SUCCEEDED para iOS Simulator con un aviso de API obsoleta (`hitTest(_:types:)`); la app se instalo y abrio en un simulador iPhone 17 Pro con iOS 26.4. Evidencia de simulador, no de sensor.
-- Artefactos disponibles: se conserva el motor de auditoria de imagenes sin cambios. L1 aporta deteccion de capacidad ARKit/AVFoundation, escritor offline v1, RGB/profundidad/confianza/intrinsecos/poses con SHA-256, vista AR, referencias metricas seleccionables, nube parcial, validacion de escala, comparacion y un host SwiftUI instalable cuando Xcode este disponible. La preparacion L2 mide formas aisladas con cobertura y rechaza volumen completo; la preparacion L3 calcula solo `AGB_kg=0.0538*DB_cm^2.4208` dentro del dominio publicado y separa biomasa, C y CO2e. No se descargaron ni anadieron datasets, capturas, nubes, imagenes, pesos o datos privados.
+- Ultimas modificaciones: 26-09-2026 en `main`: se creo `web/` como PWA sin dependencias, con deteccion de capacidades, camara RGB, sesiones IndexedDB, grupos de repeticion, referencias y geometria manual, comparacion, TAR con SHA-256, uso offline y estimador de biomasa/carbono. El estimador web comparte los 31 casos de paridad Python/Swift. El arbol `ios/` se conserva sin convertirlo en requisito. No se modificaron el manifiesto, auditoria, datasets, entrenamiento ni evaluacion del clasificador.
+- Comprobaciones realizadas: baseline del 26-09-2026 en `main`: `make check` OK con 50 pruebas Python y el host iOS ya constaba compilado para simulador con 6 XCTest. Tras la migracion, `make check` OK con 7 pruebas web y 50 Python, manifiesto de 8 fuentes y estructura; `node --check` OK para cliente y service worker. Flujo manual en navegador local OK: capacidades, calculo DB 20 cm, sesion, referencia, geometria, finalizacion e historial. Tras detener el servidor, una recarga completa abrio la PWA desde el service worker: offline OK. Camara fisica, instalacion, iPhone/Android y HTTPS publico: NO VERIFICADOS.
+- Artefactos disponibles: `web/` aporta la experiencia principal instalable y offline, formato `olivar-web-field-session` v1, originales RGB, SHA-256, TAR, historial y calculo experimental. Se conserva el motor Python de L1-L3 y el prototipo Swift como referencia de captura ARKit. La sesion web declara `source_type: web_rgb_manual`, no contiene profundidad ni representa volumen completo. No se descargaron ni anadieron datasets, capturas, nubes, imagenes, pesos o datos privados.
 - Riesgos abiertos: no hay exportacion local autorizada de Roboflow v3; sus nombres reales de carpetas y procedencia clinica siguen por comprobar; revision manual por clase pendiente; faltan IDs de arbol, sesion y finca; continúan los bloqueos de licencia/acceso de las demas fuentes y la ausencia de fotos etiquetadas del olivar.
-- Siguiente accion: instalar el host SwiftUI en el iPhone 16 Pro desde Xcode con firma personal; registrar modelo/iOS/capacidades y ejecutar el banco metrico a 1, 2 y 4 m seguido de tres capturas independientes de un olivo pequeno. El clasificador permanece en pausa.
+- Siguiente accion: publicar `web/` bajo HTTPS, probar camara, persistencia, offline y exportacion en iPhone/Android, y decidir una fuente externa para datos 3D si se mantiene L1. El clasificador permanece en pausa.
 
 ## Registro de fases
 
@@ -214,7 +228,7 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 | 1 | VALIDADA | 22-09-2026 | Commit `50e6dc9`; `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
 | 2 | EN CURSO - PENDIENTE DE DATOS | 22-09-2026 | Commit `0851a84`; motor/CLI offline implementados; 18 tests OK, incluido JPEG con `sips`, corrupcion, vacios, etiquetas, rutas inseguras y fugas exactas/perceptuales; `make data-audit` sin raiz autorizada devuelve 2 y no escribe informe | Auditar Roboflow v3 real con acceso permitido, revisar muestra por clase, resolver fugas y congelar splits |
 | 3-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
-| L0-L4 LiDAR-carbono | L0-L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO; L2-L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA | 26-09-2026 | Captura L1, geometria acotada y estimador Brunori v1; 50 tests Python, 6 XCTest y compilacion iOS Simulator OK. Modelo declarado: iPhone 16 Pro, sin verificar en dispositivo. Sin sesion real, escala, calibracion local ni validacion independiente | Instalar en el iPhone, registrar iOS/capacidades y ejecutar `docs/field-trial-l0-l1.md` |
+| L0-L4 LiDAR-carbono | L0-L1 ABIERTAS; CAPTURA LIDAR WEB BLOQUEADA; L2-L3 PREPARADAS EN SINTETICO; L4 PLANIFICADA | 26-09-2026 | PWA web usable para RGB/manual y biomasa experimental; 7 tests web + 50 Python. Swift/ARKit queda como referencia historica. Sin profundidad web en iPhone, sesion 3D real, escala, calibracion local ni validacion independiente | Publicar `web/` por HTTPS, probar iPhone/Android y decidir una fuente 3D externa si se mantiene la puerta L1 |
 
 ## Decisiones y bloqueos
 
@@ -256,6 +270,16 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 - D-021 (26-09-2026): las pruebas Swift se compilan con `--scratch-path` en
   `/tmp`, porque la firma ad hoc falla dentro de `~/Desktop` por atributos
   extendidos del Finder.
+- D-022 (26-09-2026): el cliente principal pasa a ser una PWA JavaScript sin
+  dependencias de runtime. Swift se conserva como referencia historica y de
+  paridad; la web no requiere Xcode, firma ni instalacion nativa.
+- D-023 (26-09-2026): la sesion web usa el formato separado
+  `olivar-web-field-session` v1 y `source_type: web_rgb_manual`. Detectar o
+  probar WebXR no autoriza etiquetarla como L1: sin RGB/profundidad/confianza,
+  intrinsecos y pose sincronizados no hay equivalencia con ARKit.
+- D-024 (26-09-2026): fotos y sesiones permanecen en IndexedDB hasta una
+  descarga explicita. La exportacion TAR incluye manifiesto y JPEG con SHA-256;
+  las sesiones finalizadas y sus IDs no se reutilizan.
 - B-001: acceso/licencias de datos y ausencia de fotos propias por verificar; no impide fase 0.
 - B-002: avisos de macOS por no poder crear cache temporal de `xcrun` en `/tmp` durante `make`; no bloquearon `setup`, `check` ni `status` en esta sesion.
 - B-003: repositorio `https://github.com/optim762-prog/olive_leaf_diseases` indicado por Grati et al. devolvio 404 durante fase 1; no usarlo hasta recuperar acceso o contactar autores.
@@ -264,23 +288,29 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 - B-006: el usuario declara un iPhone 16 Pro (26-09-2026). La version de iOS, el identificador de hardware y los cuatro chequeos de capacidad siguen `NO VERIFICADOS` hasta ejecutar la app en el dispositivo real.
 - B-007: faltan inventario de arboles, variedades, rangos, medidas de referencia, densidad/fraccion de carbono local, datos de biomasa por componentes, escaneos repetidos y destino de poda; no se puede estimar carbono anual de forma defendible.
 - B-008 (resuelto 26-09-2026): Xcode 27.0 instalado y seleccionado; toolchain
-  READY, paquete Swift probado y host iOS compilado para simulador. Queda
-  pendiente la firma personal para instalar en el iPhone.
+  READY, paquete Swift probado y host iOS compilado para simulador. La firma
+  personal solo seria necesaria si se recupera la captura nativa auxiliar.
 - B-009: L1 carece de sesion real completa, referencias metricas verificadas y
   revision en hardware compatible. Su puerta sigue cerrada aunque pasen los
   tests sinteticos.
+- B-010: Safari en iPhone no ofrece WebXR inmersivo y `getUserMedia` no expone
+  ARKit scene depth. Si se descarta definitivamente el cliente nativo, L1
+  necesita importar datos de otro capturador 3D compatible o redefinir su
+  alcance; una PWA RGB/manual no puede cerrar esa puerta.
 
 ## Siguiente accion
 
-Accion prioritaria LiDAR-carbono: abrir
-`ios/OlivarVisionLidarApp/OlivarVisionLidarApp.xcodeproj`, elegir equipo de
-firma personal e instalar la app en el iPhone 16 Pro; registrar iOS,
-identificador de hardware y los cuatro chequeos de capacidad de L0. Seguir
-`docs/field-trial-l0-l1.md`. Despues medir un
-objeto rigido a 1, 2 y 4 m y hacer tres capturas de un olivo pequeno con
-referencias metricas. Procesar cada sesion sin sobrescribirla y revisar campos,
-escala, cobertura y repetibilidad. En paralelo puede calcularse el ejemplo
-sintetico, pero no se usara como validacion del olivar.
+Accion prioritaria web: publicar la carpeta `web/` bajo HTTPS, abrirla en el
+iPhone y al menos un Android, comprobar camara/IndexedDB/offline, crear dos
+sesiones del mismo grupo, exportar sus TAR y confirmar hashes/contenido. En
+campo se pueden registrar fotos, referencias y medidas manuales y calcular un
+escenario alometrico acotado. Esto no ejecuta el ensayo LiDAR L0-L1.
+
+Decision pendiente para la linea 3D: elegir entre importar paquetes de un
+capturador externo que entregue profundidad, confianza, intrinsecos y pose, o
+mantener el prototipo Swift solo como herramienta auxiliar de captura. Si no se
+adopta ninguna fuente 3D, documentar L1 como bloqueada y continuar la web con
+medicion manual, sin claims de escaneo o volumen.
 
 Accion del clasificador, pausada: conservar el trabajo de fase 2. Cuando se
 retome, obtener una exportacion autorizada de Roboflow v3, mantenerla fuera de
@@ -378,6 +408,10 @@ Lee este README completo y comprueba el estado real del proyecto antes de editar
 
 ## Fuentes metodologicas
 
+- MDN `getUserMedia`, WebXR Device API y el modulo WebXR Depth Sensing para
+  capacidades web, contexto seguro y degradacion progresiva.
+- WebKit: WebXR inmersivo no esta soportado en dispositivos iOS; no usar el
+  modelo de iPhone como sustituto de una consulta de capacidad.
 - Apple: clasificar imagenes con Vision y Core ML.
 - Mohanty et al. (2016), generalizacion de modelos de enfermedad vegetal: prueba de por que evaluar con imagenes nuevas y de campo.
 - Grati et al. (2026), generalizacion entre conjuntos de hojas de olivo.

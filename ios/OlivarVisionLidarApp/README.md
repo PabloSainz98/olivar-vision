@@ -1,5 +1,9 @@
 # Host iOS Olivar Vision LiDAR
 
+Estado desde 26-09-2026: host historico, no camino de producto. La experiencia
+principal vive en `../../web/` y no requiere Xcode ni firma. Estas instrucciones
+solo aplican si se decide recuperar el host como capturador 3D auxiliar.
+
 Destino SwiftUI instalable que enlaza el paquete local `../OlivarLidarCapture`.
 Permite registrar IDs de arbol, operador y finca; crear un grupo de repeticiones;
 abrir la captura LiDAR; consultar el calculo experimental manual; y recuperar

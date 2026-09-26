@@ -1,0 +1,19 @@
+{
+  "name": "Olivar Vision",
+  "short_name": "Olivar Vision",
+  "description": "Registro de campo y estimacion experimental de biomasa y carbono.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f2",
+  "theme_color": "#1f5b43",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
