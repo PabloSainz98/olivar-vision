@@ -61,7 +61,7 @@ check-apple-toolchain:
 	@PYTHONDONTWRITEBYTECODE=$(PYTHONDONTWRITEBYTECODE) $(PYTHON) scripts/check_apple_toolchain.py
 
 check-lidar-swift: check-apple-toolchain
-	@swift test --package-path ios/OlivarLidarCapture
+	@swift test --package-path ios/OlivarLidarCapture --scratch-path /tmp/olivar-lidar-swift-build
 
 check-ios: check-apple-toolchain
 	@xcodebuild -project ios/OlivarVisionLidarApp/OlivarVisionLidarApp.xcodeproj -scheme OlivarVisionLidarApp -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/olivar-lidar-derived-data CODE_SIGNING_ALLOWED=NO build
