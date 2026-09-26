@@ -539,9 +539,27 @@ Migracion web del 26-09-2026:
 - Camara fisica, instalacion PWA, iPhone/Android y despliegue HTTPS: NO
   VERIFICADOS. El navegador de escritorio usado no ofrecio WebXR AR.
 
+Publicacion posterior del 26-09-2026:
+
+- Codigo subido a https://github.com/PabloSainz98/olivar-vision, commit
+  `e1f2e48`. Web disponible en https://pablosainz98.github.io/olivar-vision/.
+- `.github/workflows/pages.yml` ejecuta pruebas Node.js 24 y publica solo los
+  recursos del cliente; Actions `36257916471` termino correctamente.
+- `make check`: OK, 8 pruebas web + 50 Python; manifiesto y estructura OK.
+  `git diff --check`: OK. Se anadio una prueba de aislamiento de caches de
+  service worker por ruta de proyecto para convivir con otros sitios de Pages.
+- HTTPS: HTTP 200 y flujo de calculo sintetico comprobado en navegador de
+  escritorio (DB 20 cm: 75,91 kg AGB, 35,68 kg C, 130,82 kg CO2e).
+  Contexto seguro y almacenamiento local disponibles. No se solicito permiso
+  de camara ni se verifico un telefono fisico.
+- `data/field/lidar/` sigue ignorado y sin archivos versionados. `data/` solo
+  contiene `README.md`: no habia capturas privadas que alterar o publicar.
+- Este despliegue resuelve la publicacion HTTPS pendiente, no las puertas
+  L0-L4 ni la validacion de sensor, escala o alometria en campo.
+
 Estos resultados validan logica sintetica, persistencia y la interfaz web, no el
 sensor, la escala ni la precision. L0 y L1 siguen abiertos. El siguiente ensayo
-web concreto es publicar por HTTPS y comprobar camara, IndexedDB, offline y TAR
+web concreto es abrir la URL publicada y comprobar camara, IndexedDB, offline y TAR
 en iPhone/Android. El ensayo LiDAR a 1, 2 y 4 m solo puede retomarse despues de
 elegir una fuente 3D que entregue el contrato L1 real.
 

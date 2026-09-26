@@ -2,6 +2,10 @@
 
 Fecha: 26 de septiembre de 2026.
 
+**Web publicada:** [Abrir Olivar Vision](https://pablosainz98.github.io/olivar-vision/)
+desde el movil, sin instalar una app nativa.
+**Codigo:** [PabloSainz98/olivar-vision](https://github.com/PabloSainz98/olivar-vision).
+
 ## Problema y objetivo
 
 Quiero monitorizar mi olivar tomando fotos con mi iPhone. Todavia no dispongo de imagenes aereas, inventario de arboles, distancias entre ellos ni fotos etiquetadas del campo. Primero quiero desarrollar y evaluar modelos visuales; las fichas y el mapa llegaran despues. La app debe funcionar sin cobertura para las inferencias basicas y conservar la foto original y el resultado para revisarlos.
@@ -124,8 +128,11 @@ make check-ios
 ```
 
 `make web-serve` abre el cliente en `http://127.0.0.1:8788/`. En un movil debe
-publicarse la carpeta `web/` bajo HTTPS para que el navegador permita la camara.
+usarse la [web HTTPS publicada](https://pablosainz98.github.io/olivar-vision/)
+para que el navegador permita la camara.
 La guia de uso, persistencia y limites esta en `web/README.md`.
+`.github/workflows/pages.yml` comprueba la web con Node.js 24 y publica sus
+recursos estaticos cuando cambia `web/` en `main`. No publica datos de campo.
 
 `make data-audit` no descarga datos. Requiere una exportacion local autorizada y falla con codigo 2 sin ella:
 
@@ -210,15 +217,16 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 
 ## Estado vivo
 
-- Estado documentado: CLIENTE WEB IMPLEMENTADO - VALIDACION MOVIL Y CAMPO PENDIENTES (26-09-2026). Ninguna puerta L0-L3 se valida con la PWA ni con datos sinteticos.
+- Estado documentado: CLIENTE WEB PUBLICADO EN GITHUB PAGES - VALIDACION MOVIL Y CAMPO PENDIENTES (26-09-2026). Ninguna puerta L0-L3 se valida con la PWA ni con datos sinteticos.
 - Fase activa: migracion web de la linea LiDAR-carbono; el clasificador queda en fase 2, EN PAUSA - PENDIENTE DE DATOS, con su motor y pruebas sin cambios.
 - Extension LiDAR-carbono: la PWA es el cliente principal para RGB, contexto, medidas manuales, repeticiones y calculo experimental. L0-L1 siguen abiertos porque Safari/iPhone no expone la captura LiDAR necesaria; L2-L3 permanecen PREPARADAS EN SINTETICO - PUERTAS PENDIENTES y L4 PLANIFICADA. El host iOS historico compila en simulador, pero ya no es el camino de producto solicitado.
 - Ultimo hito completado: fase 1 - inventario formal de datasets y licencias, commits `50e6dc9` y `09adb83`. La fase 2 solo ha completado su motor, CLI, controles de integridad y pruebas sinteticas.
 - Ultimas modificaciones: 26-09-2026 en `main`: se creo `web/` como PWA sin dependencias, con deteccion de capacidades, camara RGB, sesiones IndexedDB, grupos de repeticion, referencias y geometria manual, comparacion, TAR con SHA-256, uso offline y estimador de biomasa/carbono. El estimador web comparte los 31 casos de paridad Python/Swift. El arbol `ios/` se conserva sin convertirlo en requisito. No se modificaron el manifiesto, auditoria, datasets, entrenamiento ni evaluacion del clasificador.
-- Comprobaciones realizadas: baseline del 26-09-2026 en `main`: `make check` OK con 50 pruebas Python y el host iOS ya constaba compilado para simulador con 6 XCTest. Tras la migracion, `make check` OK con 7 pruebas web y 50 Python, manifiesto de 8 fuentes y estructura; `node --check` OK para cliente y service worker. Flujo manual en navegador local OK: capacidades, calculo DB 20 cm, sesion, referencia, geometria, finalizacion e historial. Tras detener el servidor, una recarga completa abrio la PWA desde el service worker: offline OK. Camara fisica, instalacion, iPhone/Android y HTTPS publico: NO VERIFICADOS.
+- Comprobaciones realizadas: 26-09-2026, `make check` OK con 8 pruebas web y 50 Python, manifiesto de 8 fuentes y estructura; `git diff --check` OK. Despliegue Actions correcto, HTTPS publico HTTP 200 y calculadora comprobada en navegador. En la migracion previa se verificaron sesion, referencia, geometria, finalizacion, historial y recarga offline local. El host iOS historico constaba compilado para simulador con 6 XCTest. Camara fisica, instalacion PWA e iPhone/Android: NO VERIFICADOS.
 - Artefactos disponibles: `web/` aporta la experiencia principal instalable y offline, formato `olivar-web-field-session` v1, originales RGB, SHA-256, TAR, historial y calculo experimental. Se conserva el motor Python de L1-L3 y el prototipo Swift como referencia de captura ARKit. La sesion web declara `source_type: web_rgb_manual`, no contiene profundidad ni representa volumen completo. No se descargaron ni anadieron datasets, capturas, nubes, imagenes, pesos o datos privados.
 - Riesgos abiertos: no hay exportacion local autorizada de Roboflow v3; sus nombres reales de carpetas y procedencia clinica siguen por comprobar; revision manual por clase pendiente; faltan IDs de arbol, sesion y finca; continúan los bloqueos de licencia/acceso de las demas fuentes y la ausencia de fotos etiquetadas del olivar.
-- Siguiente accion: publicar `web/` bajo HTTPS, probar camara, persistencia, offline y exportacion en iPhone/Android, y decidir una fuente externa para datos 3D si se mantiene L1. El clasificador permanece en pausa.
+- Publicacion verificada: commit `e1f2e48`, repositorio publico y [Actions 36257916471](https://github.com/PabloSainz98/olivar-vision/actions/runs/36257916471) completado correctamente. `make check`: 8 pruebas web + 50 Python OK; manifiesto y estructura OK; `git diff --check` OK. HTTPS devuelve HTTP 200. En navegador de escritorio, contexto seguro, IndexedDB y calculo sintetico DB 20 cm verificados: 75,91 kg AGB, 35,68 kg C y 130,82 kg CO2e. La cache offline queda aislada por proyecto para no afectar a otros sitios de Pages. Esto sustituye el estado previo de HTTPS no verificado; camara fisica e iPhone/Android siguen pendientes.
+- Siguiente accion: abrir la URL publicada y probar camara, persistencia, offline y exportacion en iPhone/Android; decidir una fuente externa para datos 3D si se mantiene L1. El clasificador permanece en pausa.
 
 ## Registro de fases
 
@@ -228,7 +236,8 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 | 1 | VALIDADA | 22-09-2026 | Commit `50e6dc9`; `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
 | 2 | EN CURSO - PENDIENTE DE DATOS | 22-09-2026 | Commit `0851a84`; motor/CLI offline implementados; 18 tests OK, incluido JPEG con `sips`, corrupcion, vacios, etiquetas, rutas inseguras y fugas exactas/perceptuales; `make data-audit` sin raiz autorizada devuelve 2 y no escribe informe | Auditar Roboflow v3 real con acceso permitido, revisar muestra por clase, resolver fugas y congelar splits |
 | 3-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
-| L0-L4 LiDAR-carbono | L0-L1 ABIERTAS; CAPTURA LIDAR WEB BLOQUEADA; L2-L3 PREPARADAS EN SINTETICO; L4 PLANIFICADA | 26-09-2026 | PWA web usable para RGB/manual y biomasa experimental; 7 tests web + 50 Python. Swift/ARKit queda como referencia historica. Sin profundidad web en iPhone, sesion 3D real, escala, calibracion local ni validacion independiente | Publicar `web/` por HTTPS, probar iPhone/Android y decidir una fuente 3D externa si se mantiene la puerta L1 |
+| L0-L4 LiDAR-carbono | L0-L1 ABIERTAS; CAPTURA LIDAR WEB BLOQUEADA; L2-L3 PREPARADAS EN SINTETICO; L4 PLANIFICADA | 26-09-2026 | PWA publicada para RGB/manual y biomasa experimental; 8 tests web + 50 Python. Swift/ARKit queda como referencia historica. Sin profundidad web en iPhone, sesion 3D real, escala, calibracion local ni validacion independiente | Probar iPhone/Android y decidir una fuente 3D externa si se mantiene la puerta L1 |
+| Publicacion web | PUBLICADA - MOVIL PENDIENTE | 26-09-2026 | Repositorio y Pages publicos; Actions correcto; HTTP 200 y calculadora verificados; 8 tests web + 50 Python OK. Solo se despliegan recursos del cliente | Probar camara real, dos sesiones, TAR y offline en iPhone/Android; no cierra L0-L4 |
 
 ## Decisiones y bloqueos
 
@@ -280,6 +289,11 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 - D-024 (26-09-2026): fotos y sesiones permanecen en IndexedDB hasta una
   descarga explicita. La exportacion TAR incluye manifiesto y JPEG con SHA-256;
   las sesiones finalizadas y sus IDs no se reutilizan.
+- D-025 (26-09-2026): publicacion solicitada por el usuario en el repositorio
+  publico `PabloSainz98/olivar-vision` y GitHub Pages. El workflow publica solo
+  recursos del cliente; los datos privados siguen excluidos. Revision de 237
+  objetos del historial sin blobs mayores de 5 MB ni coincidencias de los
+  patrones de credenciales comprobados; no equivale a una auditoria de seguridad.
 - B-001: acceso/licencias de datos y ausencia de fotos propias por verificar; no impide fase 0.
 - B-002: avisos de macOS por no poder crear cache temporal de `xcrun` en `/tmp` durante `make`; no bloquearon `setup`, `check` ni `status` en esta sesion.
 - B-003: repositorio `https://github.com/optim762-prog/olive_leaf_diseases` indicado por Grati et al. devolvio 404 durante fase 1; no usarlo hasta recuperar acceso o contactar autores.
@@ -300,7 +314,7 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 
 ## Siguiente accion
 
-Accion prioritaria web: publicar la carpeta `web/` bajo HTTPS, abrirla en el
+Accion prioritaria web: abrir https://pablosainz98.github.io/olivar-vision/ en el
 iPhone y al menos un Android, comprobar camara/IndexedDB/offline, crear dos
 sesiones del mismo grupo, exportar sus TAR y confirmar hashes/contenido. En
 campo se pueden registrar fotos, referencias y medidas manuales y calcular un
