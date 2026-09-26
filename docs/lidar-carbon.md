@@ -50,8 +50,9 @@ vegetal, fruto ni otros reservorios del sistema.
 
 ## Compatibilidad del dispositivo
 
-El repositorio no documenta el modelo de iPhone ni su version de iOS. Por ello,
-la compatibilidad real esta `NO VERIFICADA`.
+El usuario declara un iPhone 16 Pro (26-09-2026); identificador esperado
+`iPhone17,1`. La version de iOS y los chequeos en tiempo de ejecucion no se
+han registrado, por lo que la compatibilidad real sigue `NO VERIFICADA`.
 
 La puerta documental situa estos chequeos antes de validar L1. En este entorno
 no se dispone del iPhone ni de Xcode completo, por lo que solo se implementaron
@@ -462,6 +463,21 @@ Resultados locales del 26-09-2026:
   XCBuild (`Unknown error parsing property list`); `swiftc -typecheck` confirma
   ademas Swift 6.4.0.34.1 frente a SDK 6.4.0.31.4. No compilo el paquete.
 - `make check-ios`: BLOQUEADO antes de compilar por falta de Xcode completo.
+
+Repeticion del 26-09-2026 tras instalar Xcode 27.0 (27A266a):
+
+- `make check`: OK, 50 pruebas (se anadio la fixture de paridad).
+- `make check-apple-toolchain`: READY.
+- `make check-lidar-swift`: OK, 6 pruebas XCTest en macOS, incluida la paridad
+  Python/Swift de 31 casos. El directorio de compilacion se movio a `/tmp`
+  porque la firma ad hoc fallaba en `~/Desktop` por atributos extendidos.
+- `make check-ios`: BUILD SUCCEEDED para iOS Simulator; aviso de API obsoleta
+  `hitTest(_:types:)` en la seleccion de referencias.
+- Se corrigio el `Info.plist` del host, que no declaraba `CFBundleIdentifier`
+  ni `CFBundleExecutable`; sin ello la app no podia instalarse. Tras el
+  cambio se instalo y abrio en un simulador iPhone 17 Pro con iOS 26.4.
+- No se recorrio la pantalla de captura en el simulador; que informe LiDAR no
+  compatible fuera de iOS solo lo cubre la prueba XCTest en macOS.
 
 Estos resultados validan logica sintetica y sintaxis, no el sensor, la escala ni
 la precision. L0 y L1 siguen abiertos. El siguiente ensayo concreto es corregir

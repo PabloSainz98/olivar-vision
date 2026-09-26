@@ -198,13 +198,13 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 
 - Estado documentado: EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO (26-09-2026). La linea LiDAR-carbono es prioritaria; ninguna puerta L0-L3 se ha validado con datos sinteticos.
 - Fase activa: linea LiDAR-carbono; el clasificador queda en fase 2, EN PAUSA - PENDIENTE DE DATOS, con su motor y pruebas sin cambios.
-- Extension LiDAR-carbono: PRIORITARIA; L0 y L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO (26-09-2026); L2 y L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA. No hay captura en iPhone, escala de campo ni estimacion validada del olivar.
+- Extension LiDAR-carbono: PRIORITARIA; L0 y L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO (26-09-2026); L2 y L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA. El host iOS compila y se abre en iOS Simulator; no hay captura en iPhone, escala de campo ni estimacion validada del olivar.
 - Ultimo hito completado: fase 1 - inventario formal de datasets y licencias, commits `50e6dc9` y `09adb83`. La fase 2 solo ha completado su motor, CLI, controles de integridad y pruebas sinteticas.
-- Ultimas modificaciones: 26-09-2026, sin commit; sobre L1 se anadieron geometria con puertas de calidad, estimador versionado Brunori v1, factor de carbono explicito, CLI, diagnostico de Xcode y vistas/pruebas Swift. No se modificaron el manifiesto, auditoria, datasets, entrenamiento ni evaluacion del clasificador.
-- Comprobaciones realizadas: 26-09-2026 en `main`; baseline `make check` OK con 30 tests y `make status` confirmo fase 2/L0-L1 pendientes. Tras los cambios, `make check` OK con 49 tests, manifiesto de 8 fuentes y estructura; 31 pruebas especificas de captura, geometria, biomasa y toolchain tambien OK. `swiftc -frontend -parse` OK para las fuentes, pruebas Swift y host iOS. `plutil -lint` del proyecto/Info.plist y `xmllint` del esquema: OK. `make check-apple-toolchain` BLOQUEADO de forma explicita: solo `/Library/Developer/CommandLineTools`, sin Xcode completo. `swift test` no inicializa XCBuild y `swiftc -typecheck` confirma compilador 6.4.0.34.1 incompatible con SDK 6.4.0.31.4. `make check-ios` queda BLOQUEADO antes de compilar. Captura/precision en iPhone y ensayo de campo: NO EJECUTADOS.
+- Ultimas modificaciones: 26-09-2026, rama `claude/olivar-vision-agents-bc27b8`: el trabajo LiDAR previo se confirmo en commits `5a5d05d`, `f703bd7`, `9ec63ea` y `1a4bfa7`; despues se anadio una fixture de paridad Python/Swift con valores calculados con `bc -l`, se corrigio el rechazo de DB medido a 0,32 m por redondeo binario, se contrasto Brunori et al. (2017) con el PDF primario, se completo el `Info.plist` del host (faltaba `CFBundleIdentifier`, lo que impedia instalar la app) y se preparo `docs/field-trial-l0-l1.md` para el iPhone 16 Pro. Antes, sobre L1 se anadieron geometria con puertas de calidad, estimador versionado Brunori v1, factor de carbono explicito, CLI, diagnostico de Xcode y vistas/pruebas Swift. No se modificaron el manifiesto, auditoria, datasets, entrenamiento ni evaluacion del clasificador.
+- Comprobaciones realizadas: 26-09-2026 en `main`; baseline `make check` OK con 30 tests y `make status` confirmo fase 2/L0-L1 pendientes. Tras los cambios, `make check` OK con 49 tests, manifiesto de 8 fuentes y estructura; 31 pruebas especificas de captura, geometria, biomasa y toolchain tambien OK. `swiftc -frontend -parse` OK para las fuentes, pruebas Swift y host iOS. `plutil -lint` del proyecto/Info.plist y `xmllint` del esquema: OK. `make check-apple-toolchain` BLOQUEADO de forma explicita: solo `/Library/Developer/CommandLineTools`, sin Xcode completo. `swift test` no inicializa XCBuild y `swiftc -typecheck` confirma compilador 6.4.0.34.1 incompatible con SDK 6.4.0.31.4. `make check-ios` queda BLOQUEADO antes de compilar. Captura/precision en iPhone y ensayo de campo: NO EJECUTADOS. Repeticion del 26-09-2026 con Xcode 27.0 (27A266a) seleccionado: `make check` OK con 50 tests; `make check-apple-toolchain` READY; `make check-lidar-swift` OK con 6 pruebas XCTest en macOS, incluida la paridad; `make check-ios` BUILD SUCCEEDED para iOS Simulator con un aviso de API obsoleta (`hitTest(_:types:)`); la app se instalo y abrio en un simulador iPhone 17 Pro con iOS 26.4. Evidencia de simulador, no de sensor.
 - Artefactos disponibles: se conserva el motor de auditoria de imagenes sin cambios. L1 aporta deteccion de capacidad ARKit/AVFoundation, escritor offline v1, RGB/profundidad/confianza/intrinsecos/poses con SHA-256, vista AR, referencias metricas seleccionables, nube parcial, validacion de escala, comparacion y un host SwiftUI instalable cuando Xcode este disponible. La preparacion L2 mide formas aisladas con cobertura y rechaza volumen completo; la preparacion L3 calcula solo `AGB_kg=0.0538*DB_cm^2.4208` dentro del dominio publicado y separa biomasa, C y CO2e. No se descargaron ni anadieron datasets, capturas, nubes, imagenes, pesos o datos privados.
 - Riesgos abiertos: no hay exportacion local autorizada de Roboflow v3; sus nombres reales de carpetas y procedencia clinica siguen por comprobar; revision manual por clase pendiente; faltan IDs de arbol, sesion y finca; continúan los bloqueos de licencia/acceso de las demas fuentes y la ausencia de fotos etiquetadas del olivar.
-- Siguiente accion: instalar y seleccionar Xcode completo, ejecutar `make check-apple-toolchain check-lidar-swift check-ios` e instalar el host SwiftUI incluido en el iPhone; registrar modelo/iOS/capacidades y ejecutar el banco metrico a 1, 2 y 4 m seguido de tres capturas independientes de un olivo pequeno. El clasificador permanece en pausa.
+- Siguiente accion: instalar el host SwiftUI en el iPhone 16 Pro desde Xcode con firma personal; registrar modelo/iOS/capacidades y ejecutar el banco metrico a 1, 2 y 4 m seguido de tres capturas independientes de un olivo pequeno. El clasificador permanece en pausa.
 
 ## Registro de fases
 
@@ -214,7 +214,7 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 | 1 | VALIDADA | 22-09-2026 | Commit `50e6dc9`; `configs/datasets.json` registra 8 fuentes; `reports/datasets.md` resume estado, licencia y cautelas; validador offline exige IDs unicos, URLs, licencias/evidencias, captura y bloqueo de aptas sin licencia; `make check` OK con 6 tests y manifiesto; `make data-audit` sigue fallando con codigo 2 esperado. | Resolver licencias/accesos antes de descargar datos reales |
 | 2 | EN CURSO - PENDIENTE DE DATOS | 22-09-2026 | Commit `0851a84`; motor/CLI offline implementados; 18 tests OK, incluido JPEG con `sips`, corrupcion, vacios, etiquetas, rutas inseguras y fugas exactas/perceptuales; `make data-audit` sin raiz autorizada devuelve 2 y no escribe informe | Auditar Roboflow v3 real con acceso permitido, revisar muestra por clase, resolver fugas y congelar splits |
 | 3-7 | PLANIFICADAS | - | Sin implementacion | Seguir puertas de avance |
-| L0-L4 LiDAR-carbono | L0-L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO; L2-L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA | 26-09-2026 | Captura L1, geometria acotada y estimador Brunori v1; 49 tests Python totales y sintaxis Swift OK. Sin iPhone, Xcode, sesion real, escala, calibracion local ni validacion independiente | Instalar/seleccionar Xcode, compilar, identificar iPhone/iOS y ejecutar banco metrico mas tres repeticiones de un olivo |
+| L0-L4 LiDAR-carbono | L0-L1 EN CURSO - PENDIENTE DE DISPOSITIVO Y CAMPO; L2-L3 PREPARADAS EN SINTETICO - PUERTAS PENDIENTES; L4 PLANIFICADA | 26-09-2026 | Captura L1, geometria acotada y estimador Brunori v1; 50 tests Python, 6 XCTest y compilacion iOS Simulator OK. Modelo declarado: iPhone 16 Pro, sin verificar en dispositivo. Sin sesion real, escala, calibracion local ni validacion independiente | Instalar en el iPhone, registrar iOS/capacidades y ejecutar `docs/field-trial-l0-l1.md` |
 
 ## Decisiones y bloqueos
 
@@ -246,27 +246,37 @@ L0 -> L1 -> L2 -> L3 -> L4. El detalle y las referencias estan en
 - D-019 (26-09-2026): ninguna fraccion de carbono se aplica implicitamente. El
   usuario debe registrar valor y fuente; 0,47 de Torrus-Castillo et al. (2026)
   solo puede usarse como proxy explicito, no como validacion de Leccino.
+- D-020 (26-09-2026): contraste con el PDF primario de Brunori et al. (2017).
+  La ecuacion y sus unidades se confirman. El articulo define DB sobre el tocon
+  y cita 0,3 m de Villalobos et al. (2005) sin declarar su propia altura; la
+  tolerancia de 0,02 m es convencion del proyecto. El texto dice 70-250
+  arboles/ha y DB 5-45 cm, pero sus tablas muestran 70-330 arboles/ha y DB
+  observado 1,0-44,5 cm. Se mantiene el dominio restrictivo hasta que el
+  usuario decida otra cosa. Detalle en `docs/lidar-carbon.md`.
+- D-021 (26-09-2026): las pruebas Swift se compilan con `--scratch-path` en
+  `/tmp`, porque la firma ad hoc falla dentro de `~/Desktop` por atributos
+  extendidos del Finder.
 - B-001: acceso/licencias de datos y ausencia de fotos propias por verificar; no impide fase 0.
 - B-002: avisos de macOS por no poder crear cache temporal de `xcrun` en `/tmp` durante `make`; no bloquearon `setup`, `check` ni `status` en esta sesion.
 - B-003: repositorio `https://github.com/optim762-prog/olive_leaf_diseases` indicado por Grati et al. devolvio 404 durante fase 1; no usarlo hasta recuperar acceso o contactar autores.
 - B-004: los datasets Kaggle `serhathoca`, `techplusmentor` e `hikmetdurmaz` quedan pendientes de licencia directa; el espejo Kaggle de 3.400 hojas queda pendiente por derechos de origen.
 - B-005: no existe una exportacion local autorizada de Roboflow v3 en este entorno; por ello no hay recuentos reales, informe de dataset ni particiones congeladas y la fase 2 no esta validada.
-- B-006: el modelo de iPhone y la version de iOS no estan documentados; compatibilidad LiDAR/ARKit `NO VERIFICADA` hasta ejecutar chequeos en el dispositivo real.
+- B-006: el usuario declara un iPhone 16 Pro (26-09-2026). La version de iOS, el identificador de hardware y los cuatro chequeos de capacidad siguen `NO VERIFICADOS` hasta ejecutar la app en el dispositivo real.
 - B-007: faltan inventario de arboles, variedades, rangos, medidas de referencia, densidad/fraccion de carbono local, datos de biomasa por componentes, escaneos repetidos y destino de poda; no se puede estimar carbono anual de forma defendible.
-- B-008: este host solo tiene `/Library/Developer/CommandLineTools` seleccionado.
-  `xcodebuild` exige Xcode completo, SwiftPM no inicializa XCBuild y el
-  compilador Swift 6.4.0.34.1 no coincide con el SDK 6.4.0.31.4. No hay
-  Xcode/simulador disponible; solo se verificaron sintaxis y estructura.
+- B-008 (resuelto 26-09-2026): Xcode 27.0 instalado y seleccionado; toolchain
+  READY, paquete Swift probado y host iOS compilado para simulador. Queda
+  pendiente la firma personal para instalar en el iPhone.
 - B-009: L1 carece de sesion real completa, referencias metricas verificadas y
   revision en hardware compatible. Su puerta sigue cerrada aunque pasen los
   tests sinteticos.
 
 ## Siguiente accion
 
-Accion prioritaria LiDAR-carbono: instalar/seleccionar Xcode y un toolchain
-Swift coherente, compilar `OlivarLidarCapture` y el host
-`OlivarVisionLidarApp`, identificar modelo exacto de
-iPhone e iOS y ejecutar los cuatro chequeos de capacidad de L0. Despues medir un
+Accion prioritaria LiDAR-carbono: abrir
+`ios/OlivarVisionLidarApp/OlivarVisionLidarApp.xcodeproj`, elegir equipo de
+firma personal e instalar la app en el iPhone 16 Pro; registrar iOS,
+identificador de hardware y los cuatro chequeos de capacidad de L0. Seguir
+`docs/field-trial-l0-l1.md`. Despues medir un
 objeto rigido a 1, 2 y 4 m y hacer tres capturas de un olivo pequeno con
 referencias metricas. Procesar cada sesion sin sobrescribirla y revisar campos,
 escala, cobertura y repetibilidad. En paralelo puede calcularse el ejemplo
