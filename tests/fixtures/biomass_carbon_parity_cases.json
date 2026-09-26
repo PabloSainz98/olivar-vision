@@ -1,0 +1,121 @@
+{
+  "format_id": "olivar-biomass-carbon-parity-cases",
+  "schema_version": 1,
+  "purpose": "Shared synthetic cases for the Python and Swift estimators. Expected numbers were computed independently with `bc -l` (scale=20) as 0.0538*e(2.4208*l(DB)), then C=AGB*fraction and CO2e=C*44/12. They check arithmetic, units and domain guards only; they are not measurements of any tree.",
+  "tolerance_kg": 1e-6,
+  "base_input": {
+    "basal_diameter_cm": 20.0,
+    "measurement_height_m": 0.3,
+    "diameter_uncertainty_cm": null,
+    "source": "manual_tape",
+    "validation_status": null,
+    "cultivar": "Leccino",
+    "training_system": "vase",
+    "water_regime": "traditional_rainfed",
+    "orchard_density_trees_per_ha": 150,
+    "carbon_fraction": 0.47,
+    "carbon_fraction_source": "synthetic parity fixture; explicit literature proxy",
+    "carbon_fraction_is_proxy": true
+  },
+  "cases": [
+    {
+      "id": "db20_reference_with_tape_sensitivity",
+      "override": {"diameter_uncertainty_cm": 0.5},
+      "expected": {
+        "available": true,
+        "aboveground_dry_biomass_kg": 75.912918641998095,
+        "kg_c": 35.679071761739105,
+        "kg_co2e": 130.823263126376718,
+        "biomass_sensitivity_kg": [71.399975516315553, 80.589047450160027],
+        "low_reliability_warning": false
+      }
+    },
+    {
+      "id": "db_lower_domain_bound",
+      "override": {"basal_diameter_cm": 5.0},
+      "expected": {
+        "available": true,
+        "aboveground_dry_biomass_kg": 2.647578600444978,
+        "kg_c": 1.244361942209139,
+        "kg_co2e": 4.562660454766845,
+        "biomass_sensitivity_kg": null,
+        "low_reliability_warning": true
+      }
+    },
+    {
+      "id": "db_below_reliable_range",
+      "override": {"basal_diameter_cm": 7.0},
+      "expected": {
+        "available": true,
+        "aboveground_dry_biomass_kg": 5.978546492830232,
+        "kg_c": 2.809916851630209,
+        "kg_co2e": 10.303028455977433,
+        "biomass_sensitivity_kg": null,
+        "low_reliability_warning": true
+      }
+    },
+    {
+      "id": "db_reliable_from_10cm",
+      "override": {"basal_diameter_cm": 10.0},
+      "expected": {
+        "available": true,
+        "aboveground_dry_biomass_kg": 14.176932633467466,
+        "kg_c": 6.663158337729709,
+        "kg_co2e": 24.431580571675599,
+        "biomass_sensitivity_kg": null,
+        "low_reliability_warning": false
+      }
+    },
+    {
+      "id": "db_upper_domain_bound",
+      "override": {"basal_diameter_cm": 45.0},
+      "expected": {
+        "available": true,
+        "aboveground_dry_biomass_kg": 540.603843452202234,
+        "kg_c": 254.083806422535050,
+        "kg_co2e": 931.640623549295183,
+        "biomass_sensitivity_kg": null,
+        "low_reliability_warning": false
+      }
+    },
+    {
+      "id": "sensitivity_crossing_domain_is_omitted",
+      "override": {"basal_diameter_cm": 45.0, "diameter_uncertainty_cm": 0.5},
+      "expected": {"available": true, "biomass_sensitivity_kg": null, "sensitivity_omitted_warning": true}
+    },
+    {"id": "db_below_domain", "override": {"basal_diameter_cm": 4.99}, "expected": {"available": false}},
+    {"id": "db_above_domain", "override": {"basal_diameter_cm": 45.01}, "expected": {"available": false}},
+    {"id": "height_upper_tolerance_inclusive", "override": {"measurement_height_m": 0.32}, "expected": {"available": true}},
+    {"id": "height_lower_tolerance_inclusive", "override": {"measurement_height_m": 0.28}, "expected": {"available": true}},
+    {"id": "height_above_tolerance", "override": {"measurement_height_m": 0.33}, "expected": {"available": false}},
+    {"id": "d80_is_not_basal_diameter", "override": {"measurement_height_m": 0.8}, "expected": {"available": false}},
+    {"id": "dbh_is_not_basal_diameter", "override": {"measurement_height_m": 1.3}, "expected": {"available": false}},
+    {"id": "density_lower_bound", "override": {"orchard_density_trees_per_ha": 70}, "expected": {"available": true}},
+    {"id": "density_upper_bound", "override": {"orchard_density_trees_per_ha": 250}, "expected": {"available": true}},
+    {"id": "density_outside_domain", "override": {"orchard_density_trees_per_ha": 251}, "expected": {"available": false}},
+    {"id": "cultivar_is_normalized", "override": {"cultivar": "  LECCINO "}, "expected": {"available": true}},
+    {"id": "other_cultivar", "override": {"cultivar": "Picual"}, "expected": {"available": false}},
+    {"id": "hedgerow_training", "override": {"training_system": "hedgerow"}, "expected": {"available": false}},
+    {"id": "irrigated_regime", "override": {"water_regime": "irrigated"}, "expected": {"available": false}},
+    {"id": "lidar_not_validated", "override": {"source": "lidar", "validation_status": "SYNTHETIC_ONLY"}, "expected": {"available": false}},
+    {"id": "lidar_validated_real_device", "override": {"source": "lidar", "validation_status": "VALIDATED_REAL_DEVICE"}, "expected": {"available": true}},
+    {"id": "missing_diameter", "override": {"basal_diameter_cm": null}, "expected": {"available": false}},
+    {"id": "missing_height", "override": {"measurement_height_m": null}, "expected": {"available": false}},
+    {"id": "missing_density", "override": {"orchard_density_trees_per_ha": null}, "expected": {"available": false}},
+    {"id": "missing_carbon_fraction", "override": {"carbon_fraction": null}, "expected": {"available": false}},
+    {"id": "zero_carbon_fraction", "override": {"carbon_fraction": 0.0}, "expected": {"available": false}},
+    {"id": "carbon_fraction_above_one", "override": {"carbon_fraction": 1.01}, "expected": {"available": false}},
+    {"id": "blank_carbon_fraction_source", "override": {"carbon_fraction_source": "  "}, "expected": {"available": false}},
+    {"id": "negative_uncertainty", "override": {"diameter_uncertainty_cm": -0.1}, "expected": {"available": false}},
+    {
+      "id": "alternative_carbon_fraction_scales_linearly",
+      "override": {"carbon_fraction": 0.5},
+      "expected": {
+        "available": true,
+        "aboveground_dry_biomass_kg": 75.912918641998095,
+        "kg_c": 37.956459320999048,
+        "kg_co2e": 139.173684176996508
+      }
+    }
+  ]
+}

@@ -21,6 +21,11 @@ MODEL_RELIABLE_FROM_DB_CM = 10.0
 MODEL_MAX_DB_CM = 45.0
 MODEL_MIN_DENSITY_HA = 70.0
 MODEL_MAX_DENSITY_HA = 250.0
+MODEL_DB_HEIGHT_M = 0.30
+MODEL_DB_HEIGHT_TOLERANCE_M = 0.02
+# Absorbs binary rounding so that 0.28 m and 0.32 m are both inside the
+# documented inclusive tolerance; it does not widen the tolerance itself.
+FLOAT_COMPARISON_EPSILON = 1e-9
 MODEL_RMSE_KG = 9.6909
 CO2_TO_C_MASS_RATIO = 44.0 / 12.0
 
@@ -80,7 +85,10 @@ def estimate_biomass_carbon(payload: Mapping[str, Any]) -> Dict[str, Any]:
                 f"basal diameter must be within {MODEL_MIN_DB_CM:g}-{MODEL_MAX_DB_CM:g} cm",
             )
         )
-    if measurement_height_m is not None and abs(measurement_height_m - 0.3) > 0.02:
+    if measurement_height_m is not None and (
+        abs(measurement_height_m - MODEL_DB_HEIGHT_M)
+        > MODEL_DB_HEIGHT_TOLERANCE_M + FLOAT_COMPARISON_EPSILON
+    ):
         reasons.append(
             _reason(
                 "measurement_height_outside_definition",
@@ -231,7 +239,11 @@ def _model_metadata() -> Dict[str, Any]:
         "source_doi": MODEL_DOI,
         "equation": "AGB_dry_kg = 0.0538 * DB_cm^2.4208",
         "dependent_variable": "above-ground dry biomass in kilograms",
-        "independent_variable": "basal diameter DB in centimeters, measured over the stump at 0.30 m",
+        "independent_variable": "basal diameter DB in centimeters, measured over the stump",
+        "measurement_height_convention": (
+            "project convention 0.30 +/- 0.02 m; the publication defines DB as over the "
+            "stump and cites Villalobos et al. 2005 for 0.3 m, without stating its own height"
+        ),
         "fit_rmse_kg": MODEL_RMSE_KG,
         "sample_size_trees": 14,
         "domain": {

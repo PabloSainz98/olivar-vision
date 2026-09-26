@@ -86,7 +86,9 @@ public enum BiomassCarbonEstimator {
         if !(5.0...45.0).contains(diameter) {
             reasons.append("El diametro basal esta fuera del dominio publicado de 5 a 45 cm.")
         }
-        if abs(measurementHeight - 0.3) > 0.02 {
+        // The epsilon absorbs binary rounding so 0.28 m and 0.32 m stay inside
+        // the documented inclusive tolerance; it does not widen it.
+        if abs(measurementHeight - 0.3) > 0.02 + 1e-9 {
             reasons.append("El diametro basal debe medirse a 0,30 m, con tolerancia de 0,02 m.")
         }
         if input.diameterSource == nil {
@@ -116,7 +118,7 @@ public enum BiomassCarbonEstimator {
            !uncertainty.isFinite || uncertainty < 0 {
             reasons.append("La incertidumbre del diametro debe ser finita y no negativa.")
         }
-        if diameter < 10.0 {
+        if diameter >= 5.0 && diameter < 10.0 {
             warnings.append("La publicacion informa mayor fiabilidad desde 10 cm de diametro basal.")
         }
         if input.carbonFractionIsProxy {

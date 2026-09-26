@@ -246,6 +246,42 @@ variedad, manejo, edad, densidad o clima.
   densidad, altura de medida o DB fuera de 5-45 cm. La sensibilidad incluida
   solo propaga `DB +/- incertidumbre de cinta`; no es un intervalo de confianza.
 
+#### Contraste con el PDF primario (26-09-2026)
+
+Se leyo el texto completo de la copia CNR-IBE (paginas 1859-1874). Resultado:
+
+- **Confirmado:** Tabla 2a, DB -> biomasa aerea en materia seca (kg), ley
+  potencial directa `y = 0.0538 x^2.4208`, ajustada sin transformacion
+  logaritmica ni factor de correccion. La Tabla 3a da el coeficiente con mas
+  cifras (`0.05379`); la diferencia relativa con `0.0538` es de 0,02 % y se
+  mantiene el valor de la Tabla 2a. El articulo nombra `a` al exponente y `b`
+  al coeficiente (`y = b*x^a`), al reves que la notacion habitual.
+- **Estadisticos:** RMSEabs 9,6909 kg, r 0,997 (no publica R^2), "MAE"
+  -2,0512 kg (con signo, es un sesgo medio) y AIC 102. El bootstrap de 1.000
+  remuestreos da rangos min-max del exponente 1,8821-2,5764 y del coeficiente
+  0,029975-0,28775; los autores califican esa incertidumbre de grande. No hay
+  errores estandar ni intervalos de confianza de los parametros.
+- **Definicion de DB:** el articulo la define como diametro medible sobre el
+  tocon y **cita** a Villalobos et al. (2005) para medir a 0,3 m; no declara la
+  altura usada en sus propios arboles ni una tolerancia. La altura de
+  0,30 +/- 0,02 m es por tanto una **convencion operativa del proyecto**.
+  Tampoco documenta si usaron cinta o calibre, ni troncos multiples.
+- **Dominio inconsistente dentro del articulo:** el texto dice 70-250
+  arboles/ha, pero la Tabla 1 lista 330, 277, 300, 285, 70 y 286 arboles/ha.
+  El texto dice clases de DB de 5 a 45 cm, pero la Tabla 4 lista DB observados
+  de 1,0 a 44,5 cm y el texto restringe las estimaciones a DB mayor de 1 cm.
+  El codigo mantiene la interpretacion mas restrictiva (70-250 arboles/ha y
+  DB 5-45 cm). Ampliarla es una decision pendiente del usuario, no un cambio
+  silencioso.
+- **Fiabilidad bajo 10 cm:** la conclusion situa la mayor fiabilidad desde
+  10 cm, pero la seccion de resultados indica que la ecuacion de AGB
+  concretamente estima correctamente tambien por debajo. Se conserva el aviso.
+- **Fraccion de carbono:** el articulo no publica ninguna; la fraccion sigue
+  siendo una entrada externa obligatoria.
+- **Componentes:** la AGB suma follaje, ramillas, ramas, tronco y tocon
+  (la Figura 5 incluye el tocon en el tronco). Los arboles se arrancaron tras la
+  poda invernal, por lo que la ecuacion describe biomasa posterior a poda.
+
 ### Ruiz-Peinado, Montero y del Rio (2012), acebuche
 
 - Datos: `Olea europaea var. sylvestris` en rodales del sur de Cadiz; 17 arboles
