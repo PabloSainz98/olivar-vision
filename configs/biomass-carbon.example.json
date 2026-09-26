@@ -1,0 +1,22 @@
+{
+  "carbon_fraction": {
+    "is_proxy": true,
+    "source": "Torrus-Castillo et al. 2026, 47% above-ground biomass in Arbosana/Picual; explicit proxy, not Leccino validation",
+    "value": 0.47
+  },
+  "domain": {
+    "cultivar": "Leccino",
+    "orchard_density_trees_per_ha": 150,
+    "training_system": "vase",
+    "water_regime": "traditional_rainfed"
+  },
+  "format_id": "olivar-biomass-carbon-input",
+  "measurement": {
+    "basal_diameter_cm": 20.0,
+    "diameter_uncertainty_cm": 0.5,
+    "measurement_height_m": 0.3,
+    "source": "manual_tape"
+  },
+  "schema_version": 1,
+  "tree_id": "synthetic-example-not-field-data"
+}
